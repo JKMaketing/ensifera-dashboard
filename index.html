@@ -1,0 +1,546 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ensífera · Impacto en Ventas</title>
+<style>
+:root{
+  --plane:#f4f6f2; --surface:#fbfcfa; --surface-2:#eef2ec;
+  --ink:#0e1a13; --ink-2:#4b5a51; --muted:#8a978d;
+  --grid:#e2e7de; --axis:#c8d0c4; --border:rgba(14,26,19,.10);
+  --brand:#1f6f4a; --brand-deep:#14472f; --brand-soft:#e3efe7;
+  --amber:#c9820d; --amber-soft:#f6ead0; --amber-line:#E8A020;
+  --teal:#12736b;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --good:#0ca30c; --good-ink:#046a12; --warn:#b5820c; --crit:#c0392b;
+  --shadow:0 1px 2px rgba(14,26,19,.05),0 8px 24px -12px rgba(14,26,19,.18);
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root:where(:not([data-theme="light"])){
+    --plane:#0d1310; --surface:#121a15; --surface-2:#18231c;
+    --ink:#eaf1ea; --ink-2:#a9b8ac; --muted:#7f8d80;
+    --grid:#22301f; --axis:#2f4030; --border:rgba(234,241,234,.10);
+    --brand:#3fa06f; --brand-deep:#8fd3ac; --brand-soft:#152e21;
+    --amber:#e0a02a; --amber-soft:#2c2412; --amber-line:#f0b24a;
+    --teal:#3fb0a4;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --good:#22b422; --good-ink:#5fd45f; --warn:#e0a52a; --crit:#e05a4c;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --plane:#0d1310; --surface:#121a15; --surface-2:#18231c;
+  --ink:#eaf1ea; --ink-2:#a9b8ac; --muted:#7f8d80;
+  --grid:#22301f; --axis:#2f4030; --border:rgba(234,241,234,.10);
+  --brand:#3fa06f; --brand-deep:#8fd3ac; --brand-soft:#152e21;
+  --amber:#e0a02a; --amber-soft:#2c2412; --amber-line:#f0b24a;
+  --teal:#3fb0a4;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --good:#22b422; --good-ink:#5fd45f; --warn:#e0a52a; --crit:#e05a4c;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--plane); color:var(--ink);
+  font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px 72px}
+h1,h2,h3,.serif{font-family:Georgia,"Iowan Old Style","Times New Roman",serif}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* header */
+header{padding:30px 0 14px}
+.brand{display:flex;align-items:center;gap:13px}
+.mark{width:40px;height:40px;flex:none}
+.brand h1{margin:0;font-size:26px;letter-spacing:.2px;font-weight:600}
+.brand .sub{color:var(--ink-2);font-size:13px;margin-top:2px}
+.tagline{color:var(--ink-2);max-width:64ch;margin:12px 0 0;font-size:14.5px}
+
+/* control bar */
+.controls{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--plane) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--border);margin:14px 0 22px;padding:12px 0}
+.ctl-row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--border);background:var(--surface);color:var(--ink-2);
+  padding:6px 12px;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--brand);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+:root[data-theme="dark"] .chip[aria-pressed="true"],
+@media (prefers-color-scheme:dark){.chip[aria-pressed="true"]{color:#08130d}}
+.dates{display:flex;align-items:center;gap:7px;margin-left:auto;flex-wrap:wrap}
+.dates label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+input[type=date]{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);
+  border:1px solid var(--border);border-radius:9px;padding:6px 9px}
+.cmp{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2);cursor:pointer;user-select:none}
+.cmp input{accent-color:var(--brand);width:16px;height:16px}
+.range-note{font-size:12.5px;color:var(--muted);margin-top:8px}
+
+/* kpi */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-bottom:26px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 16px;box-shadow:var(--shadow)}
+.kpi .k{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.kpi .v{font-size:26px;font-weight:600;margin-top:7px;letter-spacing:-.3px}
+.kpi .sec{font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.dot{width:9px;height:9px;border-radius:3px;flex:none}
+.delta{font-size:12.5px;font-weight:600;margin-top:5px;display:inline-flex;align-items:center;gap:4px}
+.delta.up{color:var(--good-ink)} .delta.down{color:var(--crit)} .delta.flat{color:var(--muted)}
+
+/* sections */
+section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px 20px 8px;margin-bottom:20px;box-shadow:var(--shadow)}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.sec-head h2{margin:0;font-size:19px;font-weight:600}
+.sec-head .desc{color:var(--ink-2);font-size:13.5px;max-width:60ch}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--brand)}
+
+.chart-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:14px}
+@media(max-width:820px){.chart-grid{grid-template-columns:1fr}}
+.chart{min-width:0}
+.chart h3{margin:0 0 2px;font-size:14px;font-weight:600}
+.chart .ch-sub{font-size:12px;color:var(--muted);margin-bottom:8px}
+.plot{position:relative}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin:10px 2px 4px;font-size:12.5px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+
+/* two-col */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.tbl th,.tbl td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
+.tbl tbody tr:hover{background:var(--surface-2)}
+.tbl tfoot td{font-weight:700;border-top:2px solid var(--axis);border-bottom:none}
+.tbl .name{display:flex;align-items:center;gap:8px}
+.scroll{overflow-x:auto}
+.pill{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.3px}
+.pill.on{background:var(--brand-soft);color:var(--brand)}
+.pill.off{background:var(--surface-2);color:var(--muted)}
+
+/* bars */
+.barlist{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.bar-row{display:grid;grid-template-columns:130px 1fr auto;gap:10px;align-items:center;font-size:13px}
+.bar-track{height:16px;background:var(--surface-2);border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px;min-width:2px}
+.bar-val{font-weight:600;color:var(--ink);min-width:52px;text-align:right}
+.bar-lab{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* reconciliation */
+.recon{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+@media(max-width:720px){.recon{grid-template-columns:1fr}}
+.note{background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--brand);
+  border-radius:9px;padding:12px 14px;font-size:13px;color:var(--ink-2)}
+.note b{color:var(--ink)}
+.match{color:var(--good-ink);font-weight:600}
+
+/* tooltip */
+.tip{position:fixed;pointer-events:none;z-index:60;background:var(--ink);color:var(--surface);
+  padding:7px 10px;border-radius:8px;font-size:12px;line-height:1.4;box-shadow:0 6px 20px rgba(0,0,0,.25);
+  opacity:0;transition:opacity .1s;max-width:240px}
+.tip .tt{font-weight:700;margin-bottom:2px}
+.tip .tr{display:flex;justify-content:space-between;gap:14px}
+.tip b{color:#fff}
+:root[data-theme="dark"] .tip{background:#e9f0e9;color:#0d1310}
+:root[data-theme="dark"] .tip b{color:#0d1310}
+
+footer{color:var(--muted);font-size:12.5px;margin-top:26px;line-height:1.7;border-top:1px solid var(--border);padding-top:16px}
+footer b{color:var(--ink-2)}
+.themebtn{position:fixed;top:14px;right:14px;z-index:40;width:36px;height:36px;border-radius:10px;
+  border:1px solid var(--border);background:var(--surface);color:var(--ink);cursor:pointer;font-size:16px;box-shadow:var(--shadow)}
+.empty{color:var(--muted);font-size:13px;padding:20px 0;text-align:center}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<button class="themebtn" id="themeBtn" title="Cambiar tema" aria-label="Cambiar tema">◑</button>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <circle cx="20" cy="20" r="19" fill="var(--brand-soft)"/>
+        <path d="M9 27c6-1 9-4 12-9 2-3 4-6 8-7-1 4-3 7-6 10-3 3-8 6-14 6z" fill="var(--brand)"/>
+        <path d="M20 18c4-5 9-8 15-9-3 3-5 5-6 8" stroke="var(--amber-line)" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <circle cx="14.5" cy="22.5" r="1.5" fill="var(--surface)"/>
+      </svg>
+      <div>
+        <h1>Ensífera · Impacto en Ventas</h1>
+        <div class="sub">Aviturismo &amp; guías de aves · Tablero interactivo de resultados publicitarios</div>
+      </div>
+    </div>
+    <p class="tagline">Lee el impacto de la inversión en Meta Ads sobre las ventas de Ensífera en cualquier rango de fechas: gastos, ventas, ROAS, sedes, productos y conversaciones — con los datos reales de la cuenta <b>Ensifera COP</b> conectados para comparar.</p>
+  </header>
+
+  <div class="controls">
+    <div class="ctl-row">
+      <div class="presets" id="presets" role="group" aria-label="Rangos rápidos"></div>
+      <div class="dates">
+        <label class="cmp"><input type="checkbox" id="cmpToggle"> Comparar vs periodo anterior</label>
+        <label for="from">Desde</label><input type="date" id="from">
+        <label for="to">Hasta</label><input type="date" id="to">
+      </div>
+    </div>
+    <div class="range-note" id="rangeNote"></div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <section>
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Serie diaria</div>
+        <h2>Impacto en Ventas</h2>
+      </div>
+      <div class="desc">Ventas atribuidas, inversión publicitaria y retorno (ROAS) día a día en el rango elegido. Cada gráfico usa una sola escala — pasa el cursor para ver el detalle.</div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart"><h3>Ventas diarias</h3><div class="ch-sub" id="s-sales-sub">COP</div><div class="plot" id="c-sales"></div></div>
+      <div class="chart"><h3>Inversión diaria</h3><div class="ch-sub" id="s-spend-sub">COP · Meta Ads</div><div class="plot" id="c-spend"></div></div>
+      <div class="chart"><h3>ROAS diario</h3><div class="ch-sub">Ventas ÷ inversión (veces)</div><div class="plot" id="c-roas"></div></div>
+    </div>
+  </section>
+
+  <div class="cols">
+    <section style="margin-bottom:0">
+      <div class="sec-head"><div><div class="eyebrow">Meta Ads · Ensifera COP</div><h2>Campañas</h2></div></div>
+      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Inversión, alcance y eficiencia por campaña en el rango elegido (datos reales de la cuenta).</div>
+      <div class="scroll"><table class="tbl" id="campTbl"></table></div>
+    </section>
+    <section style="margin-bottom:0">
+      <div class="sec-head"><div><div class="eyebrow">Conversaciones</div><h2>Sedes</h2></div></div>
+      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Distribución de conversaciones atendidas por sede física.</div>
+      <div class="barlist" id="sedesList"></div>
+    </section>
+  </div>
+
+  <div class="cols">
+    <section style="margin-bottom:0">
+      <div class="sec-head"><div><div class="eyebrow">Demanda</div><h2>Productos más consultados</h2></div></div>
+      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Ranking de productos por conversaciones generadas.</div>
+      <div class="barlist" id="prodList"></div>
+    </section>
+    <section style="margin-bottom:0">
+      <div class="sec-head"><div><div class="eyebrow">Verificación</div><h2>Hoja ↔ Meta Ads</h2></div></div>
+      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Reconciliación de la inversión registrada en la hoja contra la cuenta real Ensifera COP.</div>
+      <div id="recon"></div>
+    </section>
+  </div>
+
+  <footer id="footer"></footer>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+const DATA = {"usdCop":3600,"days":[{"date":"2026-06-23","month":"Junio","spendUSD_sheet":11.12,"spendCOP_sheetAd":null,"impressions":20438,"reach":19344,"resultsAds":21,"contactsAds":22,"conversations":22,"costConvCOP":1819.6363636363635,"salesCOP":219800,"roasSheet":5.4906075139888086,"invSalePct":18.212920837124656,"ticketConvPct":4.5454545454545459,"sedes":{},"agents":{"Laura Alejandra López":19,"Yuli Pacheco":17},"products":{"Mariposas Andinas de Colombia":13,"Guía Aves de Colombia":7,"Mamíferos":6,"Aves Silvestres":5,"Aves Valle del Cauca":1,"Guía Occidente":1,"Aves más Hermosas":1},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":11,"spendUSD":4.44,"impressions":5867,"reach":5196,"contacts":11},{"name":"WA / Aves de Colombia – Juliana 190626","results":5,"spendUSD":1.6,"impressions":4584,"reach":4464,"contacts":5},{"name":"WA / Aves más Hermosas – Juliana 190626","results":1,"spendUSD":1.63,"impressions":2730,"reach":2635,"contacts":1},{"name":"WA / Aves Silvestres – Juliana 190626","results":1,"spendUSD":1.67,"impressions":2512,"reach":2436,"contacts":2},{"name":"WA / Mamíferos – Juliana 190626","results":3,"spendUSD":1.78,"impressions":4745,"reach":4613,"contacts":3}]},{"date":"2026-06-24","month":"Junio","spendUSD_sheet":12.09,"spendCOP_sheetAd":null,"impressions":20624,"reach":19364,"resultsAds":32,"contactsAds":33,"conversations":33,"costConvCOP":1318.909090909091,"salesCOP":943400,"roasSheet":21.675397481849096,"invSalePct":4.6135255458978159,"ticketConvPct":3.0303030303030303,"sedes":{},"agents":{"Yuli Pacheco":34},"products":{"Mamíferos":10,"Guía Aves de Colombi":8,"Mariposas":6,"Aves más Hermosas":4,"Cartillas":1,"Aves Valle del Cauca":1,"Aves Silvestres":1},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":5,"spendUSD":5.45,"impressions":6414,"reach":5384,"contacts":6},{"name":"WA / Aves de Colombia – Juliana 190626","results":8,"spendUSD":1.56,"impressions":4228,"reach":4075,"contacts":8},{"name":"WA / Aves más Hermosas – Juliana 190626","results":6,"spendUSD":1.64,"impressions":2979,"reach":2979,"contacts":6},{"name":"WA / Aves Silvestres – Juliana 190626","results":1,"spendUSD":1.73,"impressions":2870,"reach":2848,"contacts":1},{"name":"WA / Mamíferos – Juliana 190626","results":12,"spendUSD":1.71,"impressions":4133,"reach":4078,"contacts":12}]},{"date":"2026-06-25","month":"Junio","spendUSD_sheet":13.79,"spendCOP_sheetAd":null,"impressions":17080,"reach":15675,"resultsAds":27,"contactsAds":28,"conversations":28,"costConvCOP":1773,"salesCOP":0,"roasSheet":0,"invSalePct":null,"ticketConvPct":3.5714285714285712,"sedes":{"Ensifera Cali":3,"Ensifera Medellín":3,"Ensifera Bogotá":2},"agents":{"Yuli Pacheco":26,"Laura Alejandra López":2},"products":{"Mariposas":9,"Aves Valle del Cauca":8,"Guía Aves de Colombia":7,"Aves Silvestres":5,"Mamíferos":4,"Aves más Hermosas":1},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":15,"spendUSD":7.85,"impressions":8436,"reach":7178,"contacts":16},{"name":"WA / Aves de Colombia – Juliana 190626","results":2,"spendUSD":1.48,"impressions":2208,"reach":2180,"contacts":2},{"name":"WA / Aves más Hermosas – Juliana 190626","results":3,"spendUSD":1.54,"impressions":2309,"reach":2267,"contacts":3},{"name":"WA / Aves Silvestres – Juliana 190626","results":3,"spendUSD":1.5,"impressions":1784,"reach":1784,"contacts":3},{"name":"WA / Mamíferos – Juliana 190626","results":4,"spendUSD":1.42,"impressions":2343,"reach":2266,"contacts":4}]},{"date":"2026-06-26","month":"Junio","spendUSD_sheet":12.59,"spendCOP_sheetAd":null,"impressions":18391,"reach":17346,"resultsAds":22,"contactsAds":23,"conversations":23,"costConvCOP":1970.608695652174,"salesCOP":0,"roasSheet":0,"invSalePct":null,"ticketConvPct":4.3478260869565215,"sedes":{"Ensifera Bogotá":6,"Ensifera Medellín":4,"Ensifera Cali":2},"agents":{"Laura Alejandra López":9,"Yuli Pacheco":6,"Carolina Giraldo":1},"products":{"Mariposas":10,"Mamíferos":7,"Aves más Hermosas":5,"Aves Silvestres":3,"Guía Aves de Colombi":2,"Doña Dora":1},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":10,"spendUSD":6.58,"impressions":9433,"reach":8549,"contacts":11},{"name":"WA / Aves de Colombia – Juliana 190626","results":3,"spendUSD":1.57,"impressions":2592,"reach":2592,"contacts":3},{"name":"WA / Aves más Hermosas – Juliana 190626","results":1,"spendUSD":1.51,"impressions":2275,"reach":2275,"contacts":1},{"name":"WA / Aves Silvestres – Juliana 190626","results":2,"spendUSD":1.56,"impressions":1694,"reach":1655,"contacts":2},{"name":"WA / Mamíferos – Juliana 190626","results":6,"spendUSD":1.37,"impressions":2397,"reach":2275,"contacts":6}]},{"date":"2026-06-27","month":"Junio","spendUSD_sheet":12.080000000000002,"spendCOP_sheetAd":null,"impressions":15178,"reach":14205,"resultsAds":22,"contactsAds":23,"conversations":23,"costConvCOP":1890.7826086956525,"salesCOP":0,"roasSheet":0,"invSalePct":null,"ticketConvPct":4.3478260869565215,"sedes":{"Ensifera Cali":5,"Ensifera Medellín":4,"Ensifera Bogotá":3},"agents":{"Yuli Pacheco":5,"Laura Alejandra López":5},"products":{"Mariposas":12,"Guía Aves de Colombi":4,"Mamíferos":3,"Compra Inconclusa":3,"Aves más Hermosas":1},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":14,"spendUSD":6.15,"impressions":6979,"reach":6113,"contacts":15},{"name":"WA / Aves de Colombia – Juliana 190626","results":3,"spendUSD":1.72,"impressions":2936,"reach":2936,"contacts":3},{"name":"WA / Aves más Hermosas – Juliana 190626","results":2,"spendUSD":1.44,"impressions":1970,"reach":1908,"contacts":2},{"name":"WA / Aves Silvestres – Juliana 190626","results":1,"spendUSD":1.54,"impressions":1322,"reach":1299,"contacts":1},{"name":"WA / Mamíferos – Juliana 190626","results":2,"spendUSD":1.23,"impressions":1971,"reach":1949,"contacts":2}]},{"date":"2026-06-28","month":"Junio","spendUSD_sheet":11.719999999999995,"spendCOP_sheetAd":null,"impressions":13664,"reach":12634,"resultsAds":23,"contactsAds":23,"conversations":23,"costConvCOP":1834.4347826086953,"salesCOP":0,"roasSheet":0,"invSalePct":-214682628100,"ticketConvPct":4.3478260869565215,"sedes":{"Ensifera Medellín":4,"Ensifera Cali":3,"Ensifera Bogotá":3},"agents":{"Yuli Pacheco":3,"Laura Alejandra López":3},"products":{"Mariposas":6,"Aves más Hermosas":3,"Guía Aves de Colombi":2},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":8,"spendUSD":5.85,"impressions":5676,"reach":4930,"contacts":8},{"name":"WA / Aves de Colombia – Juliana 190626","results":2,"spendUSD":1.33,"impressions":2175,"reach":2164,"contacts":2},{"name":"WA / Aves más Hermosas – Juliana 190626","results":7,"spendUSD":1.38,"impressions":1800,"reach":1725,"contacts":7},{"name":"WA / Aves Silvestres – Juliana 190626","results":2,"spendUSD":1.63,"impressions":1484,"reach":1416,"contacts":2},{"name":"WA / Mamíferos – Juliana 190626","results":4,"spendUSD":1.53,"impressions":2529,"reach":2399,"contacts":4}]},{"date":"2026-06-29","month":"Junio","spendUSD_sheet":12.76,"spendCOP_sheetAd":null,"impressions":14426,"reach":13321,"resultsAds":20,"contactsAds":23,"conversations":23,"costConvCOP":1997.217391304348,"salesCOP":0,"roasSheet":0,"invSalePct":-214682628100,"ticketConvPct":4.3478260869565215,"sedes":{"Ensifera Cali":6,"Ensifera Medellín":6,"Ensifera Bogotá":4},"agents":{"Yuli Pacheco":5,"Laura Alejandra López":5},"products":{"Mariposas":7,"Mamíferos":3,"Aves más Hermosas":2,"Guía Aves de Colombi":2,"Guía Andes":1},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":8,"spendUSD":6.09,"impressions":5389,"reach":4630,"contacts":9},{"name":"WA / Aves de Colombia – Juliana 190626","results":6,"spendUSD":1.38,"impressions":2100,"reach":2046,"contacts":7},{"name":"WA / Aves más Hermosas – Juliana 190626","results":1,"spendUSD":1.68,"impressions":2872,"reach":2786,"contacts":1},{"name":"WA / Aves Silvestres – Juliana 190626","results":2,"spendUSD":2,"impressions":1737,"reach":1659,"contacts":2},{"name":"WA / Mamíferos – Juliana 190626","results":3,"spendUSD":1.61,"impressions":2328,"reach":2200,"contacts":4}]},{"date":"2026-06-30","month":"Junio","spendUSD_sheet":15.22,"spendCOP_sheetAd":null,"impressions":15578,"reach":33,"resultsAds":3,"contactsAds":0,"conversations":33,"costConvCOP":1660.3636363636365,"salesCOP":0,"roasSheet":0,"invSalePct":-214682628100,"ticketConvPct":3.03030303030303,"sedes":{"Ensifera Cali":9,"Ensifera Medellín":9,"Ensifera Bogotá":7},"agents":{"Laura Alejandra López":13,"Yuli Pacheco":11,"Sergio Quintero":7},"products":{"Mariposas":18,"Guía Aves de Colombi":16,"Aves más Hermosas":15,"Mamíferos":7,"Aves Silvestres":4,"Aves Valle del Cauca":3},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":0.67230769,"spendUSD":8257,"impressions":6602,"reach":14,"contacts":null},{"name":"WA / Aves de Colombia – Juliana 190626","results":0.4125,"spendUSD":2602,"impressions":2561,"reach":5,"contacts":null},{"name":"WA / Aves más Hermosas – Juliana 190626","results":0.21625,"spendUSD":2408,"impressions":2348,"reach":8,"contacts":null},{"name":"WA / Aves Silvestres – Juliana 190626","results":1.52,"spendUSD":1596,"impressions":1539,"reach":1,"contacts":null},{"name":"WA / Mamíferos – Juliana 190626","results":0.316,"spendUSD":2661,"impressions":2528,"reach":5,"contacts":null}]},{"date":"2026-07-01","month":"Julio","spendUSD_sheet":14.78,"spendCOP_sheetAd":null,"impressions":16350,"reach":22,"resultsAds":3,"contactsAds":0,"conversations":22,"costConvCOP":2418.545454545455,"salesCOP":483600,"roasSheet":9.0888588182228229,"invSalePct":11.002481389578165,"ticketConvPct":4.5454545454545459,"sedes":{"Ensifera Cali":6,"Ensifera Medellín":6,"Ensifera Bogotá":5},"agents":{"Yuli Pacheco":9,"Sergio Quintero":7},"products":{"Guía Aves de Colombi":8,"Aves más Hermosas":5,"Mariposas":5,"Mamíferos":4,"Aves Valle del Cauca":3,"Aves Silvestres":2},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":1.776,"spendUSD":9006,"impressions":7285,"reach":6,"contacts":null},{"name":"WA / Aves de Colombia – Juliana 190626","results":0.326,"spendUSD":2676,"impressions":2655,"reach":5,"contacts":null},{"name":"WA / Aves más Hermosas – Juliana 190626","results":0.3625,"spendUSD":2528,"impressions":2508,"reach":4,"contacts":null},{"name":"WA / Aves Silvestres – Juliana 190626","results":0.45666667,"spendUSD":1686,"impressions":1659,"reach":3,"contacts":null},{"name":"WA / Mamíferos – Juliana 190626","results":0.3625,"spendUSD":2325,"impressions":2243,"reach":4,"contacts":null}]},{"date":"2026-07-02","month":"Julio","spendUSD_sheet":13.36,"spendCOP_sheetAd":null,"impressions":14961,"reach":24,"resultsAds":3,"contactsAds":0,"conversations":24,"costConvCOP":2004,"salesCOP":105000,"roasSheet":2.1831337325349303,"invSalePct":45.805714285714281,"ticketConvPct":4.1666666666666661,"sedes":{"Ensifera Cali":7,"Ensifera Bogotá":7,"Ensifera Medellín":4},"agents":{"Sergio Quintero":7,"Yuli Pacheco":2},"products":{"Mariposas":9,"Guía Aves de Colombi":7,"Aves Valle del Cauca":5,"Mamíferos":3,"Aves más Hermosas":3,"Aves Silvestres":2},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":0.65,"spendUSD":7367,"impressions":6315,"reach":13,"contacts":null},{"name":"WA / Aves de Colombia – Juliana 190626","results":0.44,"spendUSD":2504,"impressions":2464,"reach":3,"contacts":null},{"name":"WA / Aves más Hermosas – Juliana 190626","results":0.46333333,"spendUSD":2355,"impressions":2344,"reach":3,"contacts":null},{"name":"WA / Aves Silvestres – Juliana 190626","results":0.695,"spendUSD":1913,"impressions":1865,"reach":2,"contacts":null},{"name":"WA / Mamíferos – Juliana 190626","results":0.48666667,"spendUSD":2086,"impressions":1973,"reach":3,"contacts":null}]},{"date":"2026-07-03","month":"Julio","spendUSD_sheet":12.15,"spendCOP_sheetAd":null,"impressions":12231,"reach":16,"resultsAds":3,"contactsAds":0,"conversations":16,"costConvCOP":2733.7499999999995,"salesCOP":362800,"roasSheet":8.2944673068129866,"invSalePct":12.05622932745314,"ticketConvPct":6.25,"sedes":{"Ensifera Medellín":8,"Ensifera Cali":5,"Ensifera Bogotá":3},"agents":{"Sergio Quintero":5,"Yuli Pacheco":2},"products":{"Guía Aves de Colombi":5,"Salome":4,"Mariposas":4,"Aves Silvestres":3,"Aves más Hermosas":3,"Guía Orinoquía":1,"Aves Valle del Cauca":1},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":1.16,"spendUSD":6395,"impressions":5274,"reach":7,"contacts":null},{"name":"WA / Aves de Colombia – Juliana 190626","results":0.298,"spendUSD":2890,"impressions":2844,"reach":5,"contacts":null},{"name":"WA / Aves más Hermosas – Juliana 190626","results":0.4,"spendUSD":2404,"impressions":2399,"reach":3,"contacts":null},{"name":"WA / Mamíferos – Juliana 190626","results":1.34,"spendUSD":1785,"impressions":1714,"reach":1,"contacts":null}]},{"date":"2026-07-04","month":"Julio","spendUSD_sheet":15.52,"spendCOP_sheetAd":null,"impressions":14457,"reach":29,"resultsAds":3,"contactsAds":0,"conversations":29,"costConvCOP":1926.6206896551723,"salesCOP":215800,"roasSheet":3.8623997709049256,"invSalePct":25.890639481000928,"ticketConvPct":3.4482758620689653,"sedes":{"Ensifera Cali":10,"Ensifera Medellín":10,"Ensifera Bogotá":9},"agents":{"Sergio Quintero":5,"Yuli Pacheco":4},"products":{"Mariposas":11,"Guía Aves de Colombi":9,"Salome":7,"Aves más Hermosas":5,"Mamíferos":5,"Aves Valle del Cauca":4,"Libreta de Notas":1,"Aves Silvestres":1},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":0.705,"spendUSD":7766,"impressions":6414,"reach":14,"contacts":null},{"name":"WA / Aves de Colombia – Juliana 190626","results":0.22142857,"spendUSD":2720,"impressions":2642,"reach":7,"contacts":null},{"name":"WA / Aves más Hermosas – Juliana 190626","results":0.76,"spendUSD":2288,"impressions":2247,"reach":2,"contacts":null},{"name":"WA / Aves Silvestres – Juliana 190626","results":0.6,"spendUSD":1253,"impressions":1238,"reach":2,"contacts":null},{"name":"WA / Mamíferos – Juliana 190626","results":0.345,"spendUSD":2018,"impressions":1916,"reach":4,"contacts":null}]},{"date":"2026-07-05","month":"Julio","spendUSD_sheet":12.1,"spendCOP_sheetAd":null,"impressions":10537,"reach":23,"resultsAds":3,"contactsAds":0,"conversations":23,"costConvCOP":1893.9130434782608,"salesCOP":0,"roasSheet":0,"invSalePct":-214682628100,"ticketConvPct":4.3478260869565215,"sedes":{"Ensifera Cali":10,"Ensifera Bogotá":10,"Ensifera Medellín":7},"agents":{},"products":{"Salome":8,"Mariposas":8,"Aves Valle del Cauca":4,"Guía Aves de Colombi":3,"Aves más Hermosas":2,"Mamíferos":1,"Aves Silvestres":1},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":0.506,"spendUSD":5159,"impressions":4122,"reach":15,"contacts":null},{"name":"WA / Aves de Colombia – Juliana 190626","results":0.3,"spendUSD":2584,"impressions":2564,"reach":5,"contacts":null},{"name":"WA / Aves más Hermosas – Juliana 190626","results":0.705,"spendUSD":2553,"impressions":2525,"reach":2,"contacts":null},{"name":"WA / Aves Silvestres – Juliana 190626","results":1.6,"spendUSD":1333,"impressions":1326,"reach":1,"contacts":null}]},{"date":"2026-07-06","month":"Julio","spendUSD_sheet":14.79,"spendCOP_sheetAd":null,"impressions":15759,"reach":22,"resultsAds":4,"contactsAds":0,"conversations":22,"costConvCOP":2420,"salesCOP":373400,"roasSheet":7.01,"invSalePct":14.000000000000002,"ticketConvPct":4.55,"sedes":{"Ensifera Medellín":10,"Ensifera Cali":7,"Ensifera Bogotá":4},"agents":{"Yuli Pacheco":8,"Sergio Quintero":2},"products":{"Aves Valle del Cauca":7,"Mariposas":6,"Guía Aves de Colombi":4,"Aves más Hermosas":4,"Mamíferos":3,"Aves Silvestres":2,"Guía Andes":1},"campaigns":[{"name":"NC / Mariposas, Aves Valle del Cauca / WP","results":0.789,"spendUSD":6093,"impressions":4992,"reach":11,"contacts":null},{"name":"WA / Aves de Colombia – Juliana 190626","results":0.4075,"spendUSD":3583,"impressions":3539,"reach":4,"contacts":null},{"name":"WA / Aves más Hermosas – Juliana 190626","results":0.815,"spendUSD":2996,"impressions":2890,"reach":2,"contacts":null},{"name":"WA / Aves Silvestres – Juliana 190626","results":0.61,"spendUSD":1787,"impressions":1763,"reach":3,"contacts":null},{"name":"WA / Mamíferos – Juliana 190626","results":0.905,"spendUSD":2647,"impressions":2575,"reach":2,"contacts":null}]},{"date":"2026-07-07","month":"Julio","spendUSD_sheet":14.01,"spendCOP_sheetAd":null,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":27,"costConvCOP":1868,"salesCOP":null,"roasSheet":0,"invSalePct":null,"ticketConvPct":3.6999999999999997,"sedes":{},"agents":{},"products":{"Mariposas":10,"Aves Valle del Cauca":6,"Aves más Hermosas":6,"Mamíferos":3,"Aves Silvestres":2,"Guía Aves de Colombi":2},"campaigns":[]},{"date":"2026-07-08","month":"Julio","spendUSD_sheet":13.79,"spendCOP_sheetAd":null,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":24,"costConvCOP":2069,"salesCOP":293200,"roasSheet":5.91,"invSalePct":17,"ticketConvPct":4.17,"sedes":{},"agents":{},"products":{"Mariposas":11,"Aves Silvestres":6,"Guía Aves de Colombi":5,"Mamíferos":4,"Aves más Hermosas":3,"Guía Andes":1,"Aves Valle del Cauca":1},"campaigns":[]},{"date":"2026-07-09","month":"Julio","spendUSD_sheet":11.84,"spendCOP_sheetAd":null,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":17,"costConvCOP":2507,"salesCOP":399600,"roasSheet":9.38,"invSalePct":11,"ticketConvPct":5.88,"sedes":{},"agents":{},"products":{"Guía Aves de Colombi":7,"Mamíferos":4,"Aves Valle del Cauca":3,"Aves Silvestres":3,"Mariposas":2,"Aves más Hermosas":1},"campaigns":[]},{"date":"2026-07-10","month":"Julio","spendUSD_sheet":12.86,"spendCOP_sheetAd":null,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":21,"costConvCOP":2205,"salesCOP":null,"roasSheet":0,"invSalePct":null,"ticketConvPct":4.7600000000000007,"sedes":{},"agents":{},"products":{"Guía Aves de Colombi":6,"Mariposas":5,"Aves Silvestres":4,"Mamíferos":3,"Aves más Hermosas":3},"campaigns":[]},{"date":"2026-07-11","month":"Julio","spendUSD_sheet":14.58,"spendCOP_sheetAd":null,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":22,"costConvCOP":2386,"salesCOP":219800,"roasSheet":4.19,"invSalePct":24,"ticketConvPct":4.55,"sedes":{},"agents":{},"products":{"Guía Aves de Colombi":8,"Mariposas":6,"Salome":5,"Aves más Hermosas":3,"Aves Valle del Cauca":2,"Mamíferos":2,"Aves Silvestres":1,"Guía Occidente":1,"Guía Caribe":1},"campaigns":[]},{"date":"2026-07-12","month":"Julio","spendUSD_sheet":14.25,"spendCOP_sheetAd":null,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":19,"costConvCOP":2700,"salesCOP":null,"roasSheet":0,"invSalePct":null,"ticketConvPct":0,"sedes":{},"agents":{},"products":{"Mariposas":5,"Aves Valle del Cauca":4,"Salome":3,"Aves Silvestres":2,"Mamíferos":1},"campaigns":[]},{"date":"2026-07-13","month":"Julio","spendUSD_sheet":15.92,"spendCOP_sheetAd":null,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":22,"costConvCOP":2605,"salesCOP":null,"roasSheet":0,"invSalePct":null,"ticketConvPct":0,"sedes":{},"agents":{},"products":{"Mariposas":6,"Mamíferos":3,"Salome":3,"Aves más Hermosas":3,"Guía Aves de Colombi":2,"Aves Silvestres":1,"Aves Valle del Cauca":1},"campaigns":[]},{"date":"2026-07-14","month":"Julio","spendUSD_sheet":12.43,"spendCOP_sheetAd":null,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":27,"costConvCOP":1657,"salesCOP":249800,"roasSheet":5.58,"invSalePct":18,"ticketConvPct":3.6999999999999997,"sedes":{},"agents":{},"products":{"Mariposas":13,"Guía Aves de Colombi":9,"Aves Silvestres":6,"Aves más Hermosas":5,"Mamíferos":3,"Aves Valle del Cauca":2,"Tasco Jumelles 8X42":1,"Simmons PRO 8×42":1,"Diamondback 8×42":1},"campaigns":[]},{"date":"2026-07-15","month":"Julio","spendUSD_sheet":13.3,"spendCOP_sheetAd":null,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":11,"costConvCOP":4353,"salesCOP":978000,"roasSheet":20.43,"invSalePct":5,"ticketConvPct":9.09,"sedes":{},"agents":{},"products":{"Mariposas":4,"Aves más Hermosas":2,"Guía Aves de Colombi":2,"Mamíferos":2,"Guía Andes":1,"Guía Occidente":1,"Aves Valle del Cauca":1},"campaigns":[]},{"date":"2026-07-16","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":81486,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":28,"costConvCOP":2910,"salesCOP":639400,"roasSheet":7.85,"invSalePct":13,"ticketConvPct":3.5700000000000003,"sedes":{},"agents":{},"products":{"Información Tours":5,"Mamíferos":4,"Guía Aves de Colombi":4,"Vortex Triumph 10×42":4,"Binoculares":4,"SkyGenius 10×42":3,"Diamondback 10×42":2,"cafe":1,"Mariposas":1,"Aves Silvestres":1,"Tasco Jumelles 10X42":1,"Diamondback 8×42":1,"Jardín Botánico Med":1,"Colibríes Bosque Nie":1,"Aves más Hermosas":1},"campaigns":[]},{"date":"2026-07-17","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":82248,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":23,"costConvCOP":3576,"salesCOP":null,"roasSheet":0,"invSalePct":null,"ticketConvPct":4.35,"sedes":{},"agents":{},"products":{"Guía Aves de Colombi":9,"Información Tours":5,"Binoculares":4,"Vortex Triumph 10×42":4,"cafe":1,"Guía Andes":1,"Monserrate Bogotá":1,"Aves más Hermosas":1},"campaigns":[]},{"date":"2026-07-18","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":95108,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":33,"costConvCOP":2882,"salesCOP":349800,"roasSheet":3.68,"invSalePct":27,"ticketConvPct":3.0300000000000002,"sedes":{},"agents":{},"products":{"Guía Aves de Colombi":13,"Vortex Triumph 10×42":8,"Aves Valle del Cauca":1,"Binoculares":1,"Información Tours":1,"Aves más Hermosas":1},"campaigns":[]},{"date":"2026-07-19","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":84191,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":36,"costConvCOP":2339,"salesCOP":null,"roasSheet":0,"invSalePct":null,"ticketConvPct":2.78,"sedes":{},"agents":{},"products":{"Guía Aves de Colombi":14,"Vortex Triumph 10×42":4,"Binoculares":2,"Telescopio Terrestre":1},"campaigns":[]},{"date":"2026-07-20","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":99570,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":25,"costConvCOP":3983,"salesCOP":null,"roasSheet":0,"invSalePct":null,"ticketConvPct":4,"sedes":{},"agents":{},"products":{"Guía Aves de Colombi":5,"Información Tours":3,"Diamondback 10×42":1,"Telescopio Terrestre":1,"Avistamiento Cóndor":1,"Vortex Triumph 10×42":1,"Diamondback 8×42":1},"campaigns":[]},{"date":"2026-07-21","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":87388,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":45,"costConvCOP":1942,"salesCOP":null,"roasSheet":0,"invSalePct":null,"ticketConvPct":2.22,"sedes":{},"agents":{},"products":{"Binoculares":40,"Guía Aves de Colombi":32,"Información Tours":13,"Mamíferos":3,"Guía Andes":2,"Diamondback 8×42":1},"campaigns":[]},{"date":"2026-07-22","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":116057,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":44,"costConvCOP":2638,"salesCOP":674400,"roasSheet":5.81,"invSalePct":17,"ticketConvPct":2.27,"sedes":{},"agents":{},"products":{"Binoculares":21,"Guía Aves de Colombi":14,"Mamíferos":6,"Información Tours":3,"Souvenirs":2,"Mariposas":2},"campaigns":[]},{"date":"2026-07-23","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":80577,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":29,"costConvCOP":2779,"salesCOP":452700,"roasSheet":5.62,"invSalePct":18,"ticketConvPct":3.45,"sedes":{},"agents":{},"products":{"Guía Aves de Colombi":13,"Binoculares":11,"Mamíferos":4,"Información Tours":2,"Pagina Web":1,"Souvenirs":1},"campaigns":[]},{"date":"2026-07-24","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":66870,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":22,"costConvCOP":3040,"salesCOP":null,"roasSheet":0,"invSalePct":null,"ticketConvPct":4.55,"sedes":{},"agents":{},"products":{"Guía Aves de Colombi":9,"Binoculares":5,"Mamíferos":4,"Mariposas":4,"Guía Andes":1,"Aves Valle del Cauca":1},"campaigns":[]},{"date":"2026-07-25","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":85634,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":29,"costConvCOP":2953,"salesCOP":219800,"roasSheet":2.57,"invSalePct":39,"ticketConvPct":3.45,"sedes":{},"agents":{},"products":{"Guía Aves de Colombia":11,"Mamíferos":7,"Binoculares":6,"Mariposas":2},"campaigns":[]},{"date":"2026-07-26","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":90891,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":41,"costConvCOP":2217,"salesCOP":200000,"roasSheet":2.2,"invSalePct":45,"ticketConvPct":2.44,"sedes":{},"agents":{},"products":{"Mariposas":10,"Mamíferos":10,"Guía Aves de Colombi":9,"Souvenirs":6,"Binoculares":3},"campaigns":[]},{"date":"2026-07-27","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":110442,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":63,"costConvCOP":1753,"salesCOP":1418600,"roasSheet":12.84,"invSalePct":8,"ticketConvPct":1.59,"sedes":{},"agents":{},"products":{"Mamíferos":27,"Guía Aves de Colombi":18,"Souvenirs":7,"Mariposas":5,"Binoculares":3,"Guía Andes":1,"CrossFire 10×50":1,"Aves más Hermosas":1},"campaigns":[]},{"date":"2026-07-28","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":90259,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":53,"costConvCOP":1703,"salesCOP":399600,"roasSheet":4.43,"invSalePct":23,"ticketConvPct":1.8900000000000001,"sedes":{},"agents":{},"products":{"Aves más Hermosas":42,"Mamíferos":21,"Guía Aves de Colombi":2,"Aves Silvestres":1,"Guía Andes":1,"Aves Valle del Cauca":1},"campaigns":[]},{"date":"2026-07-29","month":"Julio","spendUSD_sheet":null,"spendCOP_sheetAd":65135,"impressions":0,"reach":0,"resultsAds":0,"contactsAds":0,"conversations":34,"costConvCOP":1916,"salesCOP":1367400,"roasSheet":20.99,"invSalePct":5,"ticketConvPct":2.94,"sedes":{},"agents":{},"products":{"Aves más Hermosas":20,"Mamíferos":15,"Guía Aves de Colombi":7,"Cartillas":1,"Aves Valle del Cauca":1},"campaigns":[]}],"meta":{"account":"ENSIFERA COP","accountId":"1580457616921076","currency":"COP","period":{"since":"2026-07-15","until":"2026-07-30"},"campaignTotals":[{"id":"120247670454700250","name":"WPP/ENS/EDIT","spend":702599,"impressions":114324,"reach":63289,"clicks":1586,"status":"ACTIVE"},{"id":"120247647686020250","name":"WPP/ENS/SOUV","spend":323042,"impressions":43854,"reach":29713,"clicks":574,"status":"PAUSED"},{"id":"120247646770150250","name":"WPP/ENS/TOUR","spend":234825,"impressions":34417,"reach":27360,"clicks":409,"status":"PAUSED"},{"id":"120247844223000250","name":"WPP/AVES","spend":14082,"impressions":1581,"reach":1510,"clicks":8,"status":"PAUSED"}],"daily":[{"date":"2026-07-15","camp":"WPP/ENS/SOUV","spend":3031,"impressions":433,"clicks":7},{"date":"2026-07-15","camp":"WPP/ENS/TOUR","spend":4736,"impressions":358,"clicks":11},{"date":"2026-07-16","camp":"WPP/ENS/EDIT","spend":19242,"impressions":2118,"clicks":34},{"date":"2026-07-16","camp":"WPP/ENS/SOUV","spend":28979,"impressions":3112,"clicks":57},{"date":"2026-07-16","camp":"WPP/ENS/TOUR","spend":33265,"impressions":1899,"clicks":41},{"date":"2026-07-17","camp":"WPP/ENS/EDIT","spend":28756,"impressions":3812,"clicks":49},{"date":"2026-07-17","camp":"WPP/ENS/SOUV","spend":27053,"impressions":3283,"clicks":42},{"date":"2026-07-17","camp":"WPP/ENS/TOUR","spend":26439,"impressions":1843,"clicks":26},{"date":"2026-07-18","camp":"WPP/ENS/EDIT","spend":27924,"impressions":3307,"clicks":50},{"date":"2026-07-18","camp":"WPP/ENS/SOUV","spend":36156,"impressions":4201,"clicks":47},{"date":"2026-07-18","camp":"WPP/ENS/TOUR","spend":31028,"impressions":1948,"clicks":47},{"date":"2026-07-19","camp":"WPP/ENS/EDIT","spend":27065,"impressions":2979,"clicks":52},{"date":"2026-07-19","camp":"WPP/ENS/SOUV","spend":31410,"impressions":3178,"clicks":59},{"date":"2026-07-19","camp":"WPP/ENS/TOUR","spend":25716,"impressions":1686,"clicks":47},{"date":"2026-07-20","camp":"WPP/ENS/EDIT","spend":31897,"impressions":3067,"clicks":41},{"date":"2026-07-20","camp":"WPP/ENS/SOUV","spend":30113,"impressions":3122,"clicks":39},{"date":"2026-07-20","camp":"WPP/ENS/TOUR","spend":37560,"impressions":14167,"clicks":112},{"date":"2026-07-21","camp":"WPP/ENS/EDIT","spend":31931,"impressions":5222,"clicks":79},{"date":"2026-07-21","camp":"WPP/ENS/SOUV","spend":27574,"impressions":3659,"clicks":47},{"date":"2026-07-21","camp":"WPP/ENS/TOUR","spend":27912,"impressions":8899,"clicks":70},{"date":"2026-07-22","camp":"WPP/ENS/EDIT","spend":47337,"impressions":6914,"clicks":79},{"date":"2026-07-22","camp":"WPP/ENS/SOUV","spend":36100,"impressions":4237,"clicks":58},{"date":"2026-07-22","camp":"WPP/ENS/TOUR","spend":32620,"impressions":2391,"clicks":38},{"date":"2026-07-23","camp":"WPP/ENS/EDIT","spend":33341,"impressions":5247,"clicks":80},{"date":"2026-07-23","camp":"WPP/ENS/SOUV","spend":26553,"impressions":2993,"clicks":40},{"date":"2026-07-23","camp":"WPP/ENS/TOUR","spend":15549,"impressions":1226,"clicks":17},{"date":"2026-07-23","camp":"WPP/AVES","spend":5136,"impressions":602,"clicks":3},{"date":"2026-07-24","camp":"WPP/ENS/EDIT","spend":38218,"impressions":6491,"clicks":69},{"date":"2026-07-24","camp":"WPP/ENS/SOUV","spend":19707,"impressions":2814,"clicks":21},{"date":"2026-07-24","camp":"WPP/AVES","spend":8946,"impressions":979,"clicks":5},{"date":"2026-07-25","camp":"WPP/ENS/EDIT","spend":63927,"impressions":20249,"clicks":176},{"date":"2026-07-25","camp":"WPP/ENS/SOUV","spend":21707,"impressions":3421,"clicks":34},{"date":"2026-07-26","camp":"WPP/ENS/EDIT","spend":68914,"impressions":13004,"clicks":159},{"date":"2026-07-26","camp":"WPP/ENS/SOUV","spend":21977,"impressions":6254,"clicks":85},{"date":"2026-07-27","camp":"WPP/ENS/EDIT","spend":97763,"impressions":16652,"clicks":259},{"date":"2026-07-27","camp":"WPP/ENS/SOUV","spend":12682,"impressions":3147,"clicks":38},{"date":"2026-07-28","camp":"WPP/ENS/EDIT","spend":91983,"impressions":13429,"clicks":241},{"date":"2026-07-29","camp":"WPP/ENS/EDIT","spend":68849,"impressions":8594,"clicks":160},{"date":"2026-07-30","camp":"WPP/ENS/EDIT","spend":25452,"impressions":3239,"clicks":58}]}};
+</script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const fmtCOP=v=> v==null?"—":"$"+Math.round(v).toLocaleString("es-CO");
+const fmtCOPk=v=>{ if(v==null)return "—"; if(Math.abs(v)>=1e6)return "$"+(v/1e6).toFixed(2)+"M"; if(Math.abs(v)>=1e3)return "$"+Math.round(v/1e3)+"k"; return "$"+Math.round(v);};
+const fmtN=v=> v==null?"—":Math.round(v).toLocaleString("es-CO");
+const fmtX=v=> v==null?"—":v.toFixed(2)+"×";
+const fmtPct=v=> v==null?"—":v.toFixed(1)+"%";
+const USDCOP=DATA.usdCop||3600;
+
+// ---- build unified daily model ----
+const metaByDate={};
+DATA.meta.daily.forEach(r=>{ (metaByDate[r.date]=metaByDate[r.date]||{spend:0,impr:0,clicks:0}); const m=metaByDate[r.date]; m.spend+=r.spend; m.impr+=r.impressions; m.clicks+=r.clicks; });
+
+const days=DATA.days.map(d=>{
+  const sheetAdCOP = d.spendCOP_sheetAd!=null ? d.spendCOP_sheetAd
+                    : (d.spendUSD_sheet!=null ? d.spendUSD_sheet*USDCOP : null);
+  const meta = metaByDate[d.date]||null;
+  const adSpendCOP = sheetAdCOP; // canonical ad spend for the day
+  const sales = d.salesCOP!=null && d.salesCOP>0 ? d.salesCOP : (d.salesCOP===0? null : d.salesCOP);
+  const roas = (sales!=null && adSpendCOP && adSpendCOP>0) ? sales/adSpendCOP : null;
+  return {
+    date:d.date, month:d.month,
+    adSpendCOP, spendSource: d.spendCOP_sheetAd!=null?"meta":"usd",
+    metaSpendCOP: meta?meta.spend:null, metaImpr: meta?meta.impr:null, metaClicks: meta?meta.clicks:null,
+    sheetImpr: d.impressions||0,
+    sales, roas,
+    conversations: d.conversations!=null?d.conversations:null,
+    costConvCOP: d.costConvCOP!=null?d.costConvCOP:null,
+    ticketConvPct: d.ticketConvPct,
+    sedes:d.sedes||{}, products:d.products||{},
+  };
+});
+const allDates=days.map(d=>d.date).sort();
+const DMIN=allDates[0], DMAX=allDates[allDates.length-1];
+
+// ---- date helpers ----
+const iso=d=>d.toISOString().slice(0,10);
+const parse=s=>{const[y,m,dd]=s.split("-").map(Number);return new Date(Date.UTC(y,m-1,dd));};
+const addDays=(s,n)=>{const d=parse(s);d.setUTCDate(d.getUTCDate()+n);return iso(d);};
+const daySpan=(a,b)=>Math.round((parse(b)-parse(a))/864e5)+1;
+const MES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const short=s=>{const[,m,d]=s.split("-").map(Number);return d+" "+MES[m-1];};
+const long=s=>{const[y,m,d]=s.split("-").map(Number);return d+" "+MES[m-1]+" "+y;};
+
+// ---- state ----
+let state={from:DMIN,to:DMAX,compare:false};
+
+// ---- aggregation ----
+function inRange(d,f,t){return d.date>=f&&d.date<=t;}
+function agg(f,t){
+  const sel=days.filter(d=>inRange(d,f,t));
+  let spend=0,spendN=0,sales=0,salesN=0,conv=0,convN=0,impr=0,metaSpend=0;
+  const sedes={},prods={};
+  sel.forEach(d=>{
+    if(d.adSpendCOP!=null){spend+=d.adSpendCOP;spendN++;}
+    if(d.sales!=null){sales+=d.sales;salesN++;}
+    if(d.conversations!=null){conv+=d.conversations;convN++;}
+    if(d.metaSpendCOP!=null)metaSpend+=d.metaSpendCOP;
+    impr += (d.metaImpr!=null? d.metaImpr : d.sheetImpr);
+    for(const k in d.sedes)sedes[k]=(sedes[k]||0)+d.sedes[k];
+    for(const k in d.products)prods[k]=(prods[k]||0)+d.products[k];
+  });
+  return {sel,spend,spendN,sales,salesN,conv,convN,impr,metaSpend,
+    roas: spend>0? sales/spend:null,
+    cpc: conv>0? spend/conv:null,
+    sedes,prods};
+}
+
+// ---- KPI cards ----
+function kpiCards(){
+  const a=agg(state.from,state.to);
+  let prev=null;
+  if(state.compare){
+    const span=daySpan(state.from,state.to);
+    const pt=addDays(state.from,-1), pf=addDays(pt,-(span-1));
+    prev=agg(pf,pt); prev._f=pf; prev._t=pt;
+  }
+  const cards=[
+    {k:"Ventas totales",dot:"var(--brand)",v:fmtCOP(a.sales),sec:a.salesN+" días con ventas",cur:a.sales,prev:prev?prev.sales:null,better:"up"},
+    {k:"Inversión (ads)",dot:"var(--amber-line)",v:fmtCOP(a.spend),sec:a.spendN+" días activos",cur:a.spend,prev:prev?prev.spend:null,better:"down"},
+    {k:"ROAS",dot:"var(--teal)",v:fmtX(a.roas),sec:"retorno por peso invertido",cur:a.roas,prev:prev?prev.roas:null,better:"up"},
+    {k:"Conversaciones",dot:"var(--s1)",v:fmtN(a.conv),sec:(a.cpc!=null?fmtCOP(a.cpc)+" c/u":""),cur:a.conv,prev:prev?prev.conv:null,better:"up"},
+    {k:"Costo / conversación",dot:"var(--s2)",v:fmtCOP(a.cpc),sec:"inversión ÷ conversaciones",cur:a.cpc,prev:prev?prev.cpc:null,better:"down"},
+    {k:"Impresiones",dot:"var(--s3)",v:fmtN(a.impr),sec:"alcance de los anuncios",cur:a.impr,prev:prev?prev.impr:null,better:"up"},
+  ];
+  $("#kpis").innerHTML=cards.map(c=>{
+    let d="";
+    if(prev&&c.prev!=null&&c.cur!=null){
+      if(c.prev===0){d="";}
+      else{
+        const ch=(c.cur-c.prev)/Math.abs(c.prev)*100;
+        const good = c.better==="up"? ch>=0 : ch<=0;
+        const cls = Math.abs(ch)<0.5?"flat":(good?"up":"down");
+        const ar = ch>0.5?"▲":ch<-0.5?"▼":"▪";
+        d=`<div class="delta ${cls}">${ar} ${Math.abs(ch).toFixed(0)}% vs anterior</div>`;
+      }
+    }
+    return `<div class="kpi"><div class="k"><span class="dot" style="background:${c.dot}"></span>${c.k}</div>
+      <div class="v tnum">${c.v}</div><div class="sec">${c.sec||"&nbsp;"}</div>${d}</div>`;
+  }).join("");
+}
+
+// ---- generic SVG line/area chart (single series) ----
+function lineChart(el,pts,opts){
+  opts=opts||{};
+  const W=340,H=150,PL=42,PR=10,PT=12,PB=22;
+  const box=el.getBoundingClientRect();
+  const vw=Math.max(260,box.width||W);
+  const data=pts.filter(p=>p.v!=null);
+  if(!data.length){el.innerHTML='<div class="empty">Sin datos en el rango</div>';return;}
+  const xs=pts.map(p=>p.x), n=pts.length;
+  const maxV=Math.max(opts.min0?0:Math.min(...data.map(p=>p.v)), Math.max(...data.map(p=>p.v)));
+  const minV=opts.min0?0:Math.min(...data.map(p=>p.v),0);
+  const top=maxV*1.12||1, bot=Math.min(minV,0);
+  const X=i=> PL + (n<=1?0:(i/(n-1))*(W-PL-PR));
+  const Y=v=> PT + (1-(v-bot)/((top-bot)||1))*(H-PT-PB);
+  const color=opts.color||"var(--brand)";
+  const fill=opts.fill||color;
+  // gridlines (4)
+  let grid="",ticks="";
+  for(let g=0;g<=3;g++){
+    const val=bot+(top-bot)*g/3, y=Y(val);
+    grid+=`<line x1="${PL}" y1="${y.toFixed(1)}" x2="${W-PR}" y2="${y.toFixed(1)}" stroke="var(--grid)" stroke-width="1"/>`;
+    ticks+=`<text x="${PL-6}" y="${(y+3.5).toFixed(1)}" text-anchor="end" font-size="9" fill="var(--muted)" class="tnum">${opts.fmtY?opts.fmtY(val):Math.round(val)}</text>`;
+  }
+  // area + line path (only over defined pts; break on null)
+  let area="",line="",lastX=null;
+  let segs=[],cur=[];
+  pts.forEach((p,i)=>{ if(p.v==null){ if(cur.length)segs.push(cur);cur=[];} else cur.push([X(i),Y(p.v),i]); });
+  if(cur.length)segs.push(cur);
+  let dots="";
+  segs.forEach(seg=>{
+    if(seg.length===1){
+      dots+=`<circle cx="${seg[0][0].toFixed(1)}" cy="${seg[0][1].toFixed(1)}" r="2.6" fill="${color}"/>`;
+      return;
+    }
+    line+=`<path d="${seg.map((s,i)=>(i?'L':'M')+s[0].toFixed(1)+' '+s[1].toFixed(1)).join(' ')}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(opts.area!==false){
+      const base=Y(bot);
+      area+=`<path d="M${seg[0][0].toFixed(1)} ${base.toFixed(1)} ${seg.map(s=>'L'+s[0].toFixed(1)+' '+s[1].toFixed(1)).join(' ')} L${seg[seg.length-1][0].toFixed(1)} ${base.toFixed(1)} Z" fill="${fill}" opacity="${opts.areaOp||.13}"/>`;
+    }
+  });
+  // endpoint emphasis
+  const lastDef=[...pts].map((p,i)=>[p,i]).filter(a=>a[0].v!=null).pop();
+  let end="";
+  if(lastDef){ end=`<circle cx="${X(lastDef[1]).toFixed(1)}" cy="${Y(lastDef[0].v).toFixed(1)}" r="3.4" fill="${color}" stroke="var(--surface)" stroke-width="1.5"/>`; }
+  // x labels (first,mid,last)
+  let xlab="";
+  [0,Math.floor((n-1)/2),n-1].forEach(i=>{ if(i>=0&&i<n) xlab+=`<text x="${X(i).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="9" fill="var(--muted)">${short(pts[i].x)}</text>`; });
+  // hover hit points
+  let hit="";
+  pts.forEach((p,i)=>{ if(p.v!=null) hit+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="9" fill="transparent" data-i="${i}"/>`; });
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">
+    ${grid}${area}${line}${dots}${end}${ticks}${xlab}
+    <g class="hit">${hit}</g>
+  </svg>`;
+  const svg=el.querySelector("svg");
+  svg.querySelectorAll(".hit circle").forEach(c=>{
+    c.addEventListener("mousemove",ev=>{
+      const i=+c.dataset.i,p=pts[i];
+      showTip(ev,`<div class="tt">${long(p.x)}</div><div class="tr"><span>${opts.label||"Valor"}</span><b>${opts.fmtTip?opts.fmtTip(p.v):p.v}</b></div>${p.extra||""}`);
+    });
+    c.addEventListener("mouseleave",hideTip);
+  });
+}
+
+// ---- tooltip ----
+const tip=$("#tip");
+function showTip(ev,html){tip.innerHTML=html;tip.style.opacity="1";let x=ev.clientX+14,y=ev.clientY+14;
+  const r=tip.getBoundingClientRect();if(x+r.width>innerWidth-8)x=ev.clientX-r.width-14;if(y+r.height>innerHeight-8)y=ev.clientY-r.height-14;
+  tip.style.left=x+"px";tip.style.top=y+"px";}
+function hideTip(){tip.style.opacity="0";}
+
+// ---- charts render ----
+function renderCharts(){
+  const sel=days.filter(d=>inRange(d,state.from,state.to));
+  const salesPts=sel.map(d=>({x:d.date,v:d.sales,extra:d.sales!=null&&d.adSpendCOP?`<div class="tr"><span>ROAS</span><b>${fmtX(d.roas)}</b></div>`:""}));
+  const spendPts=sel.map(d=>({x:d.date,v:d.adSpendCOP,extra:`<div class="tr"><span>Fuente</span><b>${d.spendSource==="meta"?"Ensifera COP":"Cuenta USD"}</b></div>`}));
+  const roasPts=sel.map(d=>({x:d.date,v:d.roas}));
+  lineChart($("#c-sales"),salesPts,{color:"var(--brand)",label:"Ventas",fmtTip:fmtCOP,fmtY:fmtCOPk,min0:true});
+  lineChart($("#c-spend"),spendPts,{color:"var(--amber-line)",fill:"var(--amber-line)",label:"Inversión",fmtTip:fmtCOP,fmtY:fmtCOPk,min0:true});
+  lineChart($("#c-roas"),roasPts,{color:"var(--teal)",label:"ROAS",fmtTip:fmtX,fmtY:v=>v.toFixed(0)+"×",min0:true,area:true,areaOp:.10});
+  // spend source subtitle
+  const hasMeta=sel.some(d=>d.spendSource==="meta"), hasUsd=sel.some(d=>d.spendSource==="usd");
+  $("#s-spend-sub").textContent = hasMeta&&hasUsd? "COP · cuenta USD → Ensifera COP" : hasMeta? "COP · Meta Ads (Ensifera COP)" : "COP · cuenta USD (×"+USDCOP+")";
+}
+
+// ---- campaigns table (meta, scaled to range where possible) ----
+function renderCampaigns(){
+  // aggregate meta.daily within range by campaign; fall back to totals if range covers full meta period
+  const inr=DATA.meta.daily.filter(r=>r.date>=state.from&&r.date<=state.to);
+  const by={};
+  inr.forEach(r=>{const c=by[r.camp]=by[r.camp]||{camp:r.camp,spend:0,impr:0,clicks:0};c.spend+=r.spend;c.impr+=r.impressions;c.clicks+=r.clicks;});
+  let rows=Object.values(by);
+  const meta={};DATA.meta.campaignTotals.forEach(c=>meta[c.name]=c);
+  rows.forEach(r=>{const t=meta[r.camp];r.status=t?t.status:"";});
+  rows.sort((a,b)=>b.spend-a.spend);
+  const el=$("#campTbl");
+  if(!rows.length){el.innerHTML="";$("#campTbl").innerHTML='<tbody><tr><td class="empty" colspan="6">La cuenta Ensifera COP tiene datos desde el 15 jul 2026. Amplía el rango para verlos.</td></tr></tbody>';return;}
+  let tS=0,tI=0,tC=0;rows.forEach(r=>{tS+=r.spend;tI+=r.impr;tC+=r.clicks;});
+  const colors=["var(--s1)","var(--s2)","var(--s3)","var(--s4)"];
+  el.innerHTML=`<thead><tr><th>Campaña</th><th>Estado</th><th>Inversión</th><th>Impres.</th><th>Clics</th><th>CPC</th></tr></thead>
+  <tbody>${rows.map((r,i)=>`<tr>
+    <td class="name"><span class="dot" style="background:${colors[i%4]}"></span>${r.camp.replace(/^WPP\//,'')}</td>
+    <td style="text-align:left"><span class="pill ${r.status==='ACTIVE'?'on':'off'}">${r.status==='ACTIVE'?'Activa':'Pausada'}</span></td>
+    <td class="tnum">${fmtCOP(r.spend)}</td><td class="tnum">${fmtN(r.impr)}</td><td class="tnum">${fmtN(r.clicks)}</td>
+    <td class="tnum">${fmtCOP(r.clicks?r.spend/r.clicks:null)}</td></tr>`).join("")}</tbody>
+  <tfoot><tr><td>Total</td><td></td><td class="tnum">${fmtCOP(tS)}</td><td class="tnum">${fmtN(tI)}</td><td class="tnum">${fmtN(tC)}</td><td class="tnum">${fmtCOP(tC?tS/tC:null)}</td></tr></tfoot>`;
+}
+
+// ---- horizontal bar lists ----
+function barList(el,obj,opts){
+  opts=opts||{};
+  const entries=Object.entries(obj).filter(e=>e[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,opts.limit||8);
+  if(!entries.length){el.innerHTML='<div class="empty">Sin datos en el rango</div>';return;}
+  const max=Math.max(...entries.map(e=>e[1])), tot=entries.reduce((s,e)=>s+e[1],0);
+  const colors=opts.colors||["var(--brand)"];
+  el.innerHTML=entries.map((e,i)=>{
+    const pct=(e[1]/tot*100);
+    return `<div class="bar-row"><div class="bar-lab" title="${e[0]}">${e[0]}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(e[1]/max*100).toFixed(1)}%;background:${colors[i%colors.length]}"></div></div>
+      <div class="bar-val tnum">${fmtN(e[1])} <span style="color:var(--muted);font-weight:400">· ${pct.toFixed(0)}%</span></div></div>`;
+  }).join("");
+}
+
+// ---- reconciliation ----
+function renderRecon(){
+  const inr=days.filter(d=>inRange(d,state.from,state.to));
+  // days where sheet spend sourced from Ensifera COP (meta period)
+  const metaDays=inr.filter(d=>d.spendSource==="meta"&&d.metaSpendCOP!=null);
+  let sheetSum=0,metaSum=0;
+  metaDays.forEach(d=>{sheetSum+=d.adSpendCOP;metaSum+=d.metaSpendCOP;});
+  const usdDays=inr.filter(d=>d.spendSource==="usd"&&d.adSpendCOP!=null);
+  const diff = metaSum? (sheetSum-metaSum)/metaSum*100 : 0;
+  const el=$("#recon");
+  let html="";
+  if(metaDays.length){
+    const ok=Math.abs(diff)<1.5;
+    html+=`<div class="recon">
+      <div class="kpi" style="box-shadow:none"><div class="k"><span class="dot" style="background:var(--amber-line)"></span>Registrado en hoja</div><div class="v tnum" style="font-size:22px">${fmtCOP(sheetSum)}</div><div class="sec">${metaDays.length} días (periodo Ensifera COP)</div></div>
+      <div class="kpi" style="box-shadow:none"><div class="k"><span class="dot" style="background:var(--s1)"></span>Real en Ensifera COP</div><div class="v tnum" style="font-size:22px">${fmtCOP(metaSum)}</div><div class="sec ${ok?'match':''}">${ok?'✓ Coincide':'Δ '+diff.toFixed(1)+'%'} con la hoja</div></div>
+    </div>`;
+  }
+  html+=`<div class="note" style="margin-top:12px">`;
+  if(usdDays.length&&metaDays.length){
+    html+=`<b>Migración de cuenta a mitad de julio.</b> Hasta el 15 jul la pauta corría en una cuenta en <b>USD</b> (convertida a COP × ${USDCOP}); desde el 16 jul migró a <b>Ensifera COP</b>, cuyo gasto real coincide con lo anotado en la hoja. El tablero unifica ambos periodos en una sola serie de inversión.`;
+  } else if(metaDays.length){
+    html+=`El gasto anotado en la hoja para este periodo proviene de la cuenta <b>Ensifera COP</b> y coincide con los datos reales de Meta Ads.`;
+  } else {
+    html+=`Este rango es anterior al 16 jul 2026, cuando la pauta corría en una cuenta en <b>USD</b> (convertida a COP × ${USDCOP}). La cuenta <b>Ensifera COP</b> registra actividad desde el 15 jul — amplía el rango para comparar.`;
+  }
+  html+=`</div>`;
+  el.innerHTML=html;
+}
+
+// ---- render all ----
+function renderAll(){
+  // clamp
+  if(state.from>state.to){const t=state.from;state.from=state.to;state.to=t;}
+  $("#from").value=state.from;$("#to").value=state.to;
+  const a=agg(state.from,state.to);
+  $("#rangeNote").innerHTML=`Mostrando <b style="color:var(--ink-2)">${long(state.from)}</b> → <b style="color:var(--ink-2)">${long(state.to)}</b> · ${daySpan(state.from,state.to)} días`+
+    (state.compare?` · comparando con el periodo previo de igual duración`:``);
+  // preset pressed states
+  $$("#presets .chip").forEach(c=>c.setAttribute("aria-pressed", c.dataset.f===state.from&&c.dataset.t===state.to ? "true":"false"));
+  kpiCards();
+  renderCharts();
+  renderCampaigns();
+  barList($("#sedesList"),a.sedes,{colors:["var(--s1)","var(--s2)","var(--s3)"]});
+  barList($("#prodList"),a.prods,{colors:["var(--brand)"],limit:8});
+  renderRecon();
+}
+
+// ---- presets ----
+const presets=[
+  {label:"Todo",f:DMIN,t:DMAX},
+  {label:"Junio",f:"2026-06-23",t:"2026-06-30"},
+  {label:"Julio",f:"2026-07-01",t:"2026-07-29"},
+  {label:"Ensifera COP (16–29 jul)",f:"2026-07-16",t:"2026-07-29"},
+  {label:"Últimos 7 días",f:addDays(DMAX,-6),t:DMAX},
+];
+$("#presets").innerHTML=presets.map(p=>`<button class="chip" data-f="${p.f}" data-t="${p.t}">${p.label}</button>`).join("");
+$$("#presets .chip").forEach(c=>c.addEventListener("click",()=>{state.from=c.dataset.f;state.to=c.dataset.t;renderAll();}));
+$("#from").addEventListener("change",e=>{state.from=e.target.value;renderAll();});
+$("#to").addEventListener("change",e=>{state.to=e.target.value;renderAll();});
+$("#cmpToggle").addEventListener("change",e=>{state.compare=e.target.checked;renderAll();});
+$("#from").min=DMIN;$("#from").max=DMAX;$("#to").min=DMIN;$("#to").max=DMAX;
+
+// ---- theme toggle ----
+$("#themeBtn").addEventListener("click",()=>{
+  const cur=document.documentElement.getAttribute("data-theme");
+  const dark=cur? cur==="dark" : matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme", dark?"light":"dark");
+  renderAll();
+});
+
+// ---- footer ----
+$("#footer").innerHTML=`<b>Fuentes:</b> Hoja «Conglomerado Gastos Publicitarios 2026» (Google Drive) · Cuenta Meta Ads <b>Ensifera COP</b> (ID 1580457616921076, moneda COP). `+
+  `Rango de datos: ${long(DMIN)} — ${long(DMAX)}. Meta Ads con detalle diario desde 15 jul 2026. `+
+  `ROAS = ventas ÷ inversión publicitaria. La inversión previa al 16 jul se convierte de USD a COP × ${USDCOP}. `+
+  `Tablero generado para Ensífera · JK Marketing.`;
+
+window.addEventListener("resize",()=>{clearTimeout(window._rz);window._rz=setTimeout(renderCharts,150);});
+renderAll();
+})();
+</script>

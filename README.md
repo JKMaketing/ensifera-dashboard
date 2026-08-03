@@ -30,9 +30,19 @@ Los datos están embebidos en el HTML como una instantánea (JSON) al momento de
 - **Ventas por sede**: el desglose por sede (Palmira/Cali/Medellín/Bogotá) se registra desde julio; las ventas anteriores aparecen como «Sin desglose».
 - **Cuenta Ensifera COP**: entre el 16 y el 27 jul el gasto de la hoja coincide exactamente con la cuenta (campañas WPP/ENS); desde ~28 jul los creativos cambiaron a nuevos anuncios (GMAMIF, AVMHERCOL, GCAMPAVCOL).
 
+## Actualización automática
+
+El tablero se refresca **solo, cada día**, mediante **GitHub Actions** (`.github/workflows/refresh.yml`):
+
+- Corre a las **12:00 UTC (07:00 hora Colombia)** todos los días, y también puede dispararse a mano (pestaña **Actions → Refrescar tablero Ensifera → Run workflow**).
+- `build.py` descarga la hoja pública «Conglomerado Gastos Publicitarios 2026», la parsea (openpyxl), regenera `index.html` desde `template.html` + `meta.json`, y publica el cambio. GitHub Pages republica automáticamente en el mismo enlace.
+- No depende de ningún equipo local. Requiere que la hoja siga compartida como **«Cualquiera con el enlace (Lector)»**.
+
+Para editar el diseño, modifica **`template.html`** (contiene el marcador `/*__DATA__*/ {}`), no `index.html` (que se regenera).
+
 ## Uso
 
-Abre `index.html` en cualquier navegador, o publícalo con **GitHub Pages** (Settings → Pages → Deploy from branch → root) para una URL compartible.
+Abre `index.html` en cualquier navegador. Ya está publicado en **GitHub Pages**: https://jkmaketing.github.io/ensifera-dashboard/
 
 ---
 

@@ -1,150 +1,141 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Regenera index.html del tablero de Ensifera a partir del xlsx de la hoja
-"Conglomerado Gastos Publicitarios 2026" y de meta.json (snapshot de Meta Ads).
+Regenera index.html del tablero de Impacto en Ventas de Ensifera.
 
-Uso:  python build.py <ruta_al_xlsx>
-Requiere: openpyxl  (pip install openpyxl)
+Descarga la hoja publica «Conglomerado Gastos Publicitarios 2026», la parsea,
+la combina con meta.json (instantanea de Meta Ads Ensifera COP) y la inyecta
+en template.html -> index.html. Disenado para correr desatendido (rutina nube).
 
-No necesita Excel. Pensado para correr en un entorno headless (rutina en la nube).
+Uso:  python build.py
+Req:  pip install openpyxl
 """
-import re, json, sys, os, datetime
+import io, os, re, json, sys, datetime, urllib.request
+from openpyxl import load_workbook
 
-try:
-    from openpyxl import load_workbook
-except ImportError:
-    sys.stderr.write("Falta openpyxl. Instala con: pip install openpyxl\n")
-    sys.exit(2)
-
-HERE = os.path.dirname(os.path.abspath(__file__))
+FILE_ID = "1sxBiAsb0sUOLqYNr3H7l-VhN6DpN-Boh"
+URL = "https://docs.google.com/spreadsheets/d/%s/export?format=xlsx" % FILE_ID
 USDCOP = 3600
-MONTHNUM = {"JUNIO": 6, "JULIO": 7, "AGOSTO": 8}
-SHEETS = ["Junio", "Julio", "Agosto"]
+HERE = os.path.dirname(os.path.abspath(__file__))
+MONTHNUM = {"ENERO":1,"FEBRERO":2,"MARZO":3,"ABRIL":4,"MAYO":5,"JUNIO":6,
+            "JULIO":7,"AGOSTO":8,"SEPTIEMBRE":9,"OCTUBRE":10,"NOVIEMBRE":11,"DICIEMBRE":12}
+
+def s(x):
+    return "" if x is None else str(x).strip()
 
 def is_num(x):
     return isinstance(x, (int, float)) and not isinstance(x, bool)
 
-def S(x):
-    return "" if x is None else str(x).strip()
-
 def cell(row, i):
-    if row is None or i < 0 or i >= len(row):
-        return None
-    return row[i]
+    return row[i] if (row is not None and 0 <= i < len(row)) else None
 
 def cint(x):
     if x is None: return None
     if is_num(x): return float(x)
-    t = str(x)
-    if "#" in t: return None
-    d = re.sub(r"[^0-9]", "", t)
+    st = str(x)
+    if "#" in st: return None
+    d = re.sub(r"[^0-9]", "", st)
     return float(d) if d else None
 
 def cusd(x):
     if x is None: return None
     if is_num(x): return float(x)
-    t = str(x).strip()
-    if "#" in t: return None
-    t = re.sub(r"[\$\s ]", "", t)
-    if t in ("", "-"): return None
-    if re.match(r"^[0-9]+,[0-9]{1,2}$", t): t = t.replace(",", ".")
-    else: t = t.replace(",", "")
-    try: return float(t)
-    except: return None
+    st = re.sub(r"[\$\s]", "", str(x).strip())
+    if st in ("", "-") or "#" in st: return None
+    if re.match(r"^[0-9]+,[0-9]{1,2}$", st): st = st.replace(",", ".")
+    else: st = st.replace(",", "")
+    try: return float(st)
+    except ValueError: return None
 
 def cpct(x):
     if x is None: return None
     if is_num(x): return float(x) * 100.0
-    t = str(x)
-    if "#" in t: return None
-    t = re.sub(r"[%\s ]", "", t).replace(",", ".")
-    try: return float(t)
-    except: return None
+    st = str(x)
+    if "#" in st: return None
+    st = re.sub(r"[%\s]", "", st).replace(",", ".")
+    try: return float(st)
+    except ValueError: return None
 
 def croas(x):
     if x is None: return None
     if is_num(x): return float(x)
-    t = str(x)
-    if "#" in t: return None
-    t = re.sub(r"[\$\s ]", "", t).replace(",", ".")
-    if t in ("", "-"): return None
-    try: return float(t)
-    except: return None
+    st = str(x)
+    if "#" in st: return None
+    st = re.sub(r"[\$\s]", "", st).replace(",", ".")
+    if st in ("", "-"): return None
+    try: return float(st)
+    except ValueError: return None
 
 def pdate(x):
     if x is None: return None
-    if isinstance(x, datetime.datetime): return x.strftime("%Y-%m-%d")
-    if isinstance(x, datetime.date): return x.strftime("%Y-%m-%d")
+    if isinstance(x, (datetime.datetime, datetime.date)):
+        return x.strftime("%Y-%m-%d")
     if is_num(x):
         n = float(x)
         if 20000 < n < 90000:
             return (datetime.datetime(1899, 12, 30) + datetime.timedelta(days=n)).strftime("%Y-%m-%d")
         return None
-    t = str(x).strip()
-    m = re.match(r"^(\d{4})-(\d{1,2})-(\d{1,2})", t)
+    st = str(x).strip()
+    m = re.match(r"^(\d{4})-(\d{1,2})-(\d{1,2})", st)
     if m: return "%04d-%02d-%02d" % (int(m.group(1)), int(m.group(2)), int(m.group(3)))
-    m = re.match(r"^(\d{1,2})/(\d{1,2})/(\d{4})", t)
+    m = re.match(r"^(\d{1,2})/(\d{1,2})/(\d{4})", st)
     if m: return "%04d-%02d-%02d" % (int(m.group(3)), int(m.group(2)), int(m.group(1)))
     return None
 
-def parse_sheet(ws, sheet_name, days):
-    grid = list(ws.iter_rows(values_only=True))
-    n = len(grid)
-    ncol = max((len(r) for r in grid), default=0)
+def rnd(v):
+    return None if v is None else int(round(v))
+
+def parse_sheet(ws):
+    rows = [list(r) for r in ws.iter_rows(values_only=True)]
+    n = len(rows)
+    ncol = ws.max_column or 0
     markers = []
-    for i, row in enumerate(grid):
-        m = re.match(r"^GASTOS PUBLICITARIOS\s+(\d+)\s+([A-ZÁÉÍÓÚ]+)", S(cell(row, 0)))
-        if m:
-            markers.append((i, int(m.group(1)), m.group(2).upper()))
-    for mi, (start, mday, mmon) in enumerate(markers):
+    for i in range(n):
+        m = re.match(r"^GASTOS PUBLICITARIOS\s+(\d+)\s+([A-Za-zÀ-ɏ]+)", s(cell(rows[i], 0)))
+        if m: markers.append((i, int(m.group(1)), m.group(2).upper()))
+    out = []
+    for mi in range(len(markers)):
+        start = markers[mi][0]
         end = markers[mi + 1][0] if mi + 1 < len(markers) else n
-        campaigns = []
-        sedes_conv, agents, products, sales_by_sede = {}, {}, {}, {}
-        summ = {}
-        date = None
-        gasto_usd = gasto_cop = None
+        campaigns, sedes_conv, agents, products, sales_by_sede, summ = [], {}, {}, {}, {}, {}
+        date = None; gasto_usd = gasto_cop = None
         impr = reach = res = 0.0
         r = start
         while r < end:
-            row = grid[r]
-            c0 = S(cell(row, 0))
-            # campaign/ad table (header has "Importe gastado (USD|COP)")
+            row = rows[r]
+            c0 = s(cell(row, 0))
+            # campaign/ad table (header contains "Importe gastado (USD|COP)")
             spend_col = -1; curr = None
             for c in range(ncol):
-                h = S(cell(row, c))
+                h = s(cell(row, c))
                 if "Importe gastado" in h:
-                    spend_col = c
-                    curr = "USD" if "USD" in h else "COP"
-                    break
+                    spend_col = c; curr = "USD" if "USD" in h else "COP"; break
             if spend_col >= 0:
                 name_col = impr_col = reach_col = res_col = -1
                 for c in range(ncol):
-                    h = S(cell(row, c))
+                    h = s(cell(row, c))
                     if h.startswith("Nombre"): name_col = c
                     elif h == "Impresiones": impr_col = c
                     elif h == "Alcance": reach_col = c
-                    elif h in ("Resultados", "Mensajes totales", "Contactos de mensajes"): res_col = c
+                    elif re.match(r"^(Resultados|Mensajes totales|Contactos de mensajes)$", h): res_col = c
                 if name_col < 0: name_col = 0
                 j = r + 1
                 while j < end:
-                    r2 = grid[j]
-                    gt = False
+                    r2 = rows[j]; gt = False
                     for c in range(ncol):
-                        if S(cell(r2, c)) == "GASTO TOTAL":
+                        if s(cell(r2, c)) == "GASTO TOTAL":
                             gt = True
                             if curr == "USD": gasto_usd = cusd(cell(r2, c + 1))
                             else: gasto_cop = cint(cell(r2, c + 1))
                             break
                     if gt: break
-                    nm = S(cell(r2, name_col))
-                    if nm == "" or nm.startswith("Nombre") or nm.startswith("Inicio"):
+                    nm = s(cell(r2, name_col))
+                    if nm == "" or re.match(r"^(Nombre|Inicio)", nm):
                         j += 1; continue
-                    sp_raw = cell(r2, spend_col)
                     if curr == "USD":
-                        u = cusd(sp_raw); sp = round(u * 3600) if u is not None else None
+                        u = cusd(cell(r2, spend_col)); sp = rnd(u * 3600) if u is not None else None
                     else:
-                        sp = cint(sp_raw)
+                        sp = cint(cell(r2, spend_col))
                     im = cint(cell(r2, impr_col)) if impr_col >= 0 else None
                     rc = cint(cell(r2, reach_col)) if reach_col >= 0 else None
                     rs = cint(cell(r2, res_col)) if res_col >= 0 else None
@@ -154,21 +145,19 @@ def parse_sheet(ws, sheet_name, days):
                     if rs: res += rs
                     j += 1
                 r = j; continue
-            # CONVERSACIONES / CONVERSACIONES MERCATELY
+            # CONVERSACIONES (agentes + sedes)
             if re.match(r"^CONVERSACIONES", c0):
                 a_col = h_row = -1
                 for j in range(r + 1, min(r + 4, end)):
                     for c in range(ncol):
-                        if S(cell(grid[j], c)) == "Agente":
-                            a_col = c; h_row = j; break
+                        if s(cell(rows[j], c)) == "Agente": a_col = c; h_row = j; break
                     if a_col >= 0: break
                 if a_col >= 0:
                     j = h_row + 1
                     while j < end:
-                        a = S(cell(grid[j], a_col))
-                        if a == "": break
-                        if re.match(r"^(MENSAJES|PRODUCTOS|CONVERSACIONES|Ventas|Valor|NOMBRE)", a): break
-                        cnt = cint(cell(grid[j], a_col + 1))
+                        a = s(cell(rows[j], a_col))
+                        if a == "" or re.match(r"^(MENSAJES|PRODUCTOS|CONVERSACIONES|Ventas|Valor|NOMBRE)", a): break
+                        cnt = cint(cell(rows[j], a_col + 1))
                         if cnt is not None:
                             if re.match(r"(?i)^Ensifera\s", a): sedes_conv[a] = cnt
                             else: agents[a] = cnt
@@ -179,32 +168,29 @@ def parse_sheet(ws, sheet_name, days):
                 p_col = h_row = -1
                 for j in range(r + 1, min(r + 4, end)):
                     for c in range(ncol):
-                        if S(cell(grid[j], c)) == "Producto":
-                            p_col = c; h_row = j; break
+                        if s(cell(rows[j], c)) == "Producto": p_col = c; h_row = j; break
                     if p_col >= 0: break
                 if p_col >= 0:
                     j = h_row + 1
                     while j < end:
-                        p = S(cell(grid[j], p_col))
-                        if p == "": break
-                        if re.match(r"^(MENSAJES|CONVERSACIONES|Ventas|Valor|NOMBRE)", p): break
-                        cnt = cint(cell(grid[j], p_col + 1))
+                        p = s(cell(rows[j], p_col))
+                        if p == "" or re.match(r"^(MENSAJES|CONVERSACIONES|Ventas|Valor|NOMBRE)", p): break
+                        cnt = cint(cell(rows[j], p_col + 1))
                         if cnt is not None: products[p] = cnt
                         j += 1
                 r += 1; continue
             # Ventas Totales <Sede>
-            msede = re.match(r"^Ventas Totales\s+(Palmira|Cali|Medell\S*|Bogot\S*)", c0)
-            if msede:
+            if re.match(r"^Ventas Totales\s+(Palmira|Cali|Medell|Bogot)", c0):
                 sede = re.sub(r"^Ventas Totales\s+", "", c0)
                 v = cint(cell(row, 1))
-                sales_by_sede[sede] = v if v is not None else 0
+                sales_by_sede[sede] = rnd(v) if v is not None else 0
                 r += 1; continue
             # trailing NOMBRE summary
             if c0 == "NOMBRE":
                 dd = pdate(cell(row, 1))
                 if dd: date = dd
                 for j in range(r + 1, min(r + 11, end)):
-                    lbl = S(cell(grid[j], 0)); val = cell(grid[j], 1)
+                    lbl = s(cell(rows[j], 0)); val = cell(rows[j], 1)
                     if re.search(r"Inversi.n USD", lbl): summ["spendUSD"] = cusd(val)
                     elif re.search(r"Inversion PC", lbl): summ["spendCOP"] = cint(val)
                     elif lbl == "Conversaciones": summ["conversations"] = cint(val)
@@ -215,55 +201,63 @@ def parse_sheet(ws, sheet_name, days):
                     elif re.search(r"Ticket Conversi", lbl): summ["ticketConvPct"] = cpct(val)
                 r += 1; continue
             r += 1
+
         if not date:
-            date = "2026-%02d-%02d" % (MONTHNUM.get(mmon, 0), mday)
+            date = "2026-%02d-%02d" % (MONTHNUM.get(markers[mi][2], 1), markers[mi][1])
         spend_cop = summ.get("spendCOP")
         if spend_cop is None:
-            spend_cop = gasto_cop if gasto_cop is not None else (round(gasto_usd * 3600) if gasto_usd is not None else None)
-        days[date] = {
-            "date": date, "month": sheet_name,
-            "spendCOP": spend_cop, "spendUSD": summ.get("spendUSD"),
+            spend_cop = gasto_cop if gasto_cop is not None else (rnd(gasto_usd * 3600) if gasto_usd is not None else None)
+        out.append({
+            "date": date, "month": ws.title,
+            "spendCOP": rnd(spend_cop),
+            "spendUSD": summ.get("spendUSD"),
             "impressions": int(impr), "reach": int(reach), "resultsAds": int(res),
-            "conversations": summ.get("conversations"), "costConvCOP": summ.get("costConvCOP"),
-            "salesCOP": summ.get("salesCOP"), "roas": summ.get("roas"),
-            "invSalePct": summ.get("invSalePct"), "ticketConvPct": summ.get("ticketConvPct"),
-            "salesBySede": sales_by_sede, "sedesConv": sedes_conv, "agents": agents,
-            "products": products, "campaigns": campaigns,
-        }
+            "conversations": rnd(summ.get("conversations")),
+            "costConvCOP": rnd(summ.get("costConvCOP")),
+            "salesCOP": rnd(summ.get("salesCOP")),
+            "roas": summ.get("roas"),
+            "invSalePct": summ.get("invSalePct"),
+            "ticketConvPct": summ.get("ticketConvPct"),
+            "salesBySede": sales_by_sede, "sedesConv": sedes_conv,
+            "agents": agents, "products": products, "campaigns": campaigns,
+        })
+    return out
 
 def main():
-    if len(sys.argv) < 2:
-        sys.stderr.write("Uso: python build.py <ruta_al_xlsx>\n"); sys.exit(1)
-    xlsx = sys.argv[1]
-    wb = load_workbook(xlsx, data_only=True)
-    days = {}
-    for name in SHEETS:
-        if name in wb.sheetnames:
-            parse_sheet(wb[name], name, days)
-    days_list = [days[k] for k in sorted(days.keys())]
+    sys.stderr.write("Descargando hoja publica...\n")
+    data = urllib.request.urlopen(URL, timeout=90).read()
+    if data[:2] != b"PK":
+        sys.exit("ERROR: la descarga no es un xlsx. La hoja debe estar compartida como 'Cualquiera con el enlace (Lector)'.")
+    wb = load_workbook(io.BytesIO(data), data_only=True)
+    all_days = []
+    for ws in wb.worksheets:
+        all_days.extend(parse_sheet(ws))
+    by_date = {}
+    for d in sorted(all_days, key=lambda d: d["date"]):
+        by_date[d["date"]] = d
+    days = list(by_date.values())
+    if not days:
+        sys.exit("ERROR: no se encontraron dias en la hoja.")
 
-    with open(os.path.join(HERE, "meta.json"), "r", encoding="utf-8") as f:
+    with open(os.path.join(HERE, "meta.json"), encoding="utf-8") as f:
         meta = json.load(f)
-
-    combined = {"usdCop": USDCOP, "days": days_list,
-                "meta": {"account": meta.get("account"), "accountId": meta.get("accountId"),
-                         "currency": meta.get("currency"), "period": meta.get("period"),
-                         "campaignTotals": meta.get("campaignTotals", []), "daily": meta.get("daily", [])}}
-
-    with open(os.path.join(HERE, "template.html"), "r", encoding="utf-8") as f:
-        tpl = f.read()
+    combined = {"usdCop": USDCOP, "days": days, "meta": {
+        "account": meta.get("account"), "accountId": meta.get("accountId"),
+        "currency": meta.get("currency"), "period": meta.get("period"),
+        "campaignTotals": meta.get("campaignTotals", []), "daily": meta.get("daily", [])}}
     data_json = json.dumps(combined, ensure_ascii=False, separators=(",", ":"))
-    out = tpl.replace("/*__DATA__*/ {}", data_json)
-    if "/*__DATA__*/" in out:
-        sys.stderr.write("ERROR: no se pudo inyectar el placeholder en template.html\n"); sys.exit(3)
-    with open(os.path.join(HERE, "index.html"), "w", encoding="utf-8") as f:
-        f.write(out)
 
-    tot_spend = sum(d["spendCOP"] or 0 for d in days_list)
-    tot_sales = sum(d["salesCOP"] or 0 for d in days_list)
-    sys.stderr.write("OK: %d dias (%s -> %s)  spendCOP=%d  salesCOP=%d\n" % (
-        len(days_list), days_list[0]["date"] if days_list else "-",
-        days_list[-1]["date"] if days_list else "-", tot_spend, tot_sales))
+    with open(os.path.join(HERE, "template.html"), encoding="utf-8") as f:
+        tpl = f.read()
+    if "/*__DATA__*/ {}" not in tpl:
+        sys.exit("ERROR: falta el placeholder /*__DATA__*/ {} en template.html")
+    with open(os.path.join(HERE, "index.html"), "w", encoding="utf-8") as f:
+        f.write(tpl.replace("/*__DATA__*/ {}", data_json))
+
+    t_spend = sum(d["spendCOP"] or 0 for d in days)
+    t_sales = sum(d["salesCOP"] or 0 for d in days)
+    sys.stderr.write("OK: %d dias (%s -> %s)  inversion=%d COP  ventas=%d COP\n" %
+                     (len(days), days[0]["date"], days[-1]["date"], t_spend, t_sales))
 
 if __name__ == "__main__":
     main()

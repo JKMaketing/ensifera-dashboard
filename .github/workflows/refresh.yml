@@ -1,0 +1,43 @@
+name: Refrescar tablero Ensifera
+
+# Se ejecuta solo cada dia y tambien puede dispararse a mano
+on:
+  schedule:
+    - cron: "0 12 * * *"   # 12:00 UTC = 07:00 America/Bogota
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install openpyxl
+
+      - name: Regenerar index.html desde la hoja
+        run: python build.py
+
+      - name: Publicar si hay cambios
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain index.html)" ]; then
+            git add index.html
+            git commit -m "Auto-refresh tablero ($(date -u +%Y-%m-%d))"
+            git push
+            echo "Tablero actualizado y publicado."
+          else
+            echo "Sin cambios: el tablero ya estaba al dia."
+          fi

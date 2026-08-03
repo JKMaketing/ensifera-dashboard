@@ -255,12 +255,14 @@ const days=DATA.days.map(d=>{
   const sheetAdCOP = d.spendCOP_sheetAd!=null ? d.spendCOP_sheetAd
                     : (d.spendUSD_sheet!=null ? d.spendUSD_sheet*USDCOP : null);
   const meta = metaByDate[d.date]||null;
-  const adSpendCOP = sheetAdCOP; // canonical ad spend for the day
+  // canonical ad spend: sheet value, or Meta actual when the sheet has no spend that day
+  const adSpendCOP = sheetAdCOP!=null ? sheetAdCOP : (meta? meta.spend : null);
+  const spendSource = d.spendCOP_sheetAd!=null ? "meta" : (sheetAdCOP!=null ? "usd" : (meta? "meta" : "usd"));
   const sales = d.salesCOP!=null && d.salesCOP>0 ? d.salesCOP : (d.salesCOP===0? null : d.salesCOP);
   const roas = (sales!=null && adSpendCOP && adSpendCOP>0) ? sales/adSpendCOP : null;
   return {
-    date:d.date, month:d.month,
-    adSpendCOP, spendSource: d.spendCOP_sheetAd!=null?"meta":"usd",
+    date:d.date, month:d.month, logged:true,
+    adSpendCOP, spendSource,
     metaSpendCOP: meta?meta.spend:null, metaImpr: meta?meta.impr:null, metaClicks: meta?meta.clicks:null,
     sheetImpr: d.impressions||0,
     sales, roas,
@@ -270,6 +272,18 @@ const days=DATA.days.map(d=>{
     sedes:d.sedes||{}, products:d.products||{},
   };
 });
+// Add days that exist only in Meta Ads (sheet not yet filled) as spend-only records
+const sheetDates=new Set(days.map(d=>d.date));
+Object.keys(metaByDate).forEach(dt=>{
+  if(sheetDates.has(dt))return;
+  const m=metaByDate[dt];
+  days.push({date:dt, month:"Julio", logged:false,
+    adSpendCOP:m.spend, spendSource:"meta",
+    metaSpendCOP:m.spend, metaImpr:m.impr, metaClicks:m.clicks, sheetImpr:0,
+    sales:null, roas:null, conversations:null, costConvCOP:null, ticketConvPct:null,
+    sedes:{}, products:{}});
+});
+days.sort((a,b)=> a.date<b.date? -1 : a.date>b.date? 1 : 0);
 const allDates=days.map(d=>d.date).sort();
 const DMIN=allDates[0], DMAX=allDates[allDates.length-1];
 
@@ -466,8 +480,8 @@ function barList(el,obj,opts){
 // ---- reconciliation ----
 function renderRecon(){
   const inr=days.filter(d=>inRange(d,state.from,state.to));
-  // days where sheet spend sourced from Ensifera COP (meta period)
-  const metaDays=inr.filter(d=>d.spendSource==="meta"&&d.metaSpendCOP!=null);
+  // days where sheet spend sourced from Ensifera COP (meta period) — only sheet-logged days
+  const metaDays=inr.filter(d=>d.logged&&d.spendSource==="meta"&&d.metaSpendCOP!=null);
   let sheetSum=0,metaSum=0;
   metaDays.forEach(d=>{sheetSum+=d.adSpendCOP;metaSum+=d.metaSpendCOP;});
   const usdDays=inr.filter(d=>d.spendSource==="usd"&&d.adSpendCOP!=null);
@@ -515,8 +529,8 @@ function renderAll(){
 const presets=[
   {label:"Todo",f:DMIN,t:DMAX},
   {label:"Junio",f:"2026-06-23",t:"2026-06-30"},
-  {label:"Julio",f:"2026-07-01",t:"2026-07-29"},
-  {label:"Ensifera COP (16–29 jul)",f:"2026-07-16",t:"2026-07-29"},
+  {label:"Julio",f:"2026-07-01",t:DMAX},
+  {label:"Ensifera COP",f:"2026-07-16",t:DMAX},
   {label:"Últimos 7 días",f:addDays(DMAX,-6),t:DMAX},
 ];
 $("#presets").innerHTML=presets.map(p=>`<button class="chip" data-f="${p.f}" data-t="${p.t}">${p.label}</button>`).join("");
@@ -536,7 +550,7 @@ $("#themeBtn").addEventListener("click",()=>{
 
 // ---- footer ----
 $("#footer").innerHTML=`<b>Fuentes:</b> Hoja «Conglomerado Gastos Publicitarios 2026» (Google Drive) · Cuenta Meta Ads <b>Ensifera COP</b> (ID 1580457616921076, moneda COP). `+
-  `Rango de datos: ${long(DMIN)} — ${long(DMAX)}. Meta Ads con detalle diario desde 15 jul 2026. `+
+  `Rango de datos: ${long(DMIN)} — ${long(DMAX)}. La hoja tiene ventas registradas hasta el 29 jul; el 30 jul muestra solo la inversión real de Meta (las campañas terminaron su vuelo el 30 jul y las ventas de ese día aún no se registran en la hoja). `+
   `ROAS = ventas ÷ inversión publicitaria. La inversión previa al 16 jul se convierte de USD a COP × ${USDCOP}. `+
   `Tablero generado para Ensífera · JK Marketing.`;
 

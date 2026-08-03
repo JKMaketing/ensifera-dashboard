@@ -3,7 +3,8 @@ name: Refrescar tablero Ensifera
 # Se ejecuta solo cada dia y tambien puede dispararse a mano
 on:
   schedule:
-    - cron: "0 12 * * *"   # 12:00 UTC = 07:00 America/Bogota
+    - cron: "0 12 * * *"   # 12:00 UTC = 07:00 America/Bogota (sondeo matutino)
+    - cron: "0 0 * * *"    # 00:00 UTC = 19:00 America/Bogota (sondeo vespertino)
   workflow_dispatch:
 
 permissions:

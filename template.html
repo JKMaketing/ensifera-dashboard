@@ -1,0 +1,490 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ensífera · Impacto en Ventas</title>
+<style>
+:root{
+  --plane:#f4f6f2; --surface:#fbfcfa; --surface-2:#eef2ec;
+  --ink:#0e1a13; --ink-2:#4b5a51; --muted:#8a978d;
+  --grid:#e2e7de; --axis:#c8d0c4; --border:rgba(14,26,19,.10);
+  --brand:#1f6f4a; --brand-deep:#14472f; --brand-soft:#e3efe7;
+  --amber:#c9820d; --amber-soft:#f6ead0; --amber-line:#E8A020;
+  --teal:#12736b;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --good:#0ca30c; --good-ink:#046a12; --warn:#b5820c; --crit:#c0392b;
+  --shadow:0 1px 2px rgba(14,26,19,.05),0 8px 24px -12px rgba(14,26,19,.18);
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root:where(:not([data-theme="light"])){
+    --plane:#0d1310; --surface:#121a15; --surface-2:#18231c;
+    --ink:#eaf1ea; --ink-2:#a9b8ac; --muted:#7f8d80;
+    --grid:#22301f; --axis:#2f4030; --border:rgba(234,241,234,.10);
+    --brand:#3fa06f; --brand-deep:#8fd3ac; --brand-soft:#152e21;
+    --amber:#e0a02a; --amber-soft:#2c2412; --amber-line:#f0b24a;
+    --teal:#3fb0a4;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --good:#22b422; --good-ink:#5fd45f; --warn:#e0a52a; --crit:#e05a4c;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --plane:#0d1310; --surface:#121a15; --surface-2:#18231c;
+  --ink:#eaf1ea; --ink-2:#a9b8ac; --muted:#7f8d80;
+  --grid:#22301f; --axis:#2f4030; --border:rgba(234,241,234,.10);
+  --brand:#3fa06f; --brand-deep:#8fd3ac; --brand-soft:#152e21;
+  --amber:#e0a02a; --amber-soft:#2c2412; --amber-line:#f0b24a;
+  --teal:#3fb0a4;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --good:#22b422; --good-ink:#5fd45f; --warn:#e0a52a; --crit:#e05a4c;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--plane);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px 72px}
+h1,h2,h3,.serif{font-family:Georgia,"Iowan Old Style","Times New Roman",serif}
+.tnum{font-variant-numeric:tabular-nums}
+header{padding:30px 0 14px}
+.brand{display:flex;align-items:center;gap:13px}
+.mark{width:40px;height:40px;flex:none}
+.brand h1{margin:0;font-size:26px;letter-spacing:.2px;font-weight:600}
+.brand .sub{color:var(--ink-2);font-size:13px;margin-top:2px}
+.tagline{color:var(--ink-2);max-width:66ch;margin:12px 0 0;font-size:14.5px}
+.controls{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--plane) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);margin:14px 0 22px;padding:12px 0}
+.ctl-row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--border);background:var(--surface);color:var(--ink-2);padding:6px 12px;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--brand);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+@media (prefers-color-scheme:dark){.chip[aria-pressed="true"]{color:#08130d}}
+:root[data-theme="dark"] .chip[aria-pressed="true"]{color:#08130d}
+.dates{display:flex;align-items:center;gap:7px;margin-left:auto;flex-wrap:wrap}
+.dates label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+input[type=date]{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:6px 9px}
+.cmp{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2);cursor:pointer;user-select:none}
+.cmp input{accent-color:var(--brand);width:16px;height:16px}
+.range-note{font-size:12.5px;color:var(--muted);margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-bottom:26px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 16px;box-shadow:var(--shadow)}
+.kpi .k{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.kpi .v{font-size:26px;font-weight:600;margin-top:7px;letter-spacing:-.3px}
+.kpi .sec{font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.dot{width:9px;height:9px;border-radius:3px;flex:none}
+.delta{font-size:12.5px;font-weight:600;margin-top:5px;display:inline-flex;align-items:center;gap:4px}
+.delta.up{color:var(--good-ink)}.delta.down{color:var(--crit)}.delta.flat{color:var(--muted)}
+section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 20px 8px;margin-bottom:20px;box-shadow:var(--shadow)}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.sec-head h2{margin:0;font-size:19px;font-weight:600}
+.sec-head .desc{color:var(--ink-2);font-size:13.5px;max-width:60ch}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--brand)}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:14px}
+@media(max-width:820px){.chart-grid{grid-template-columns:1fr}}
+.chart{min-width:0}
+.chart h3{margin:0 0 2px;font-size:14px;font-weight:600}
+.chart .ch-sub{font-size:12px;color:var(--muted);margin-bottom:8px}
+.plot{position:relative}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.tbl th,.tbl td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
+.tbl tbody tr:hover{background:var(--surface-2)}
+.tbl tfoot td{font-weight:700;border-top:2px solid var(--axis);border-bottom:none}
+.tbl .name{display:flex;align-items:center;gap:8px;max-width:230px;overflow:hidden;text-overflow:ellipsis}
+.scroll{overflow-x:auto}
+.pill{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.3px}
+.pill.on{background:var(--brand-soft);color:var(--brand)}
+.pill.off{background:var(--surface-2);color:var(--muted)}
+.barlist{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.bar-row{display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center;font-size:13px}
+@media(max-width:520px){.bar-row{grid-template-columns:110px 1fr auto}}
+.bar-track{height:16px;background:var(--surface-2);border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px;min-width:2px}
+.bar-val{font-weight:600;color:var(--ink);min-width:52px;text-align:right}
+.bar-lab{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.recon{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+@media(max-width:720px){.recon{grid-template-columns:1fr}}
+.note{background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:9px;padding:12px 14px;font-size:13px;color:var(--ink-2);margin-top:12px}
+.note b{color:var(--ink)}
+.match{color:var(--good-ink);font-weight:600}
+.tip{position:fixed;pointer-events:none;z-index:60;background:var(--ink);color:var(--surface);padding:7px 10px;border-radius:8px;font-size:12px;line-height:1.4;box-shadow:0 6px 20px rgba(0,0,0,.25);opacity:0;transition:opacity .1s;max-width:250px}
+.tip .tt{font-weight:700;margin-bottom:2px}
+.tip .tr{display:flex;justify-content:space-between;gap:14px}
+.tip b{color:#fff}
+:root[data-theme="dark"] .tip{background:#e9f0e9;color:#0d1310}
+:root[data-theme="dark"] .tip b{color:#0d1310}
+footer{color:var(--muted);font-size:12.5px;margin-top:26px;line-height:1.7;border-top:1px solid var(--border);padding-top:16px}
+footer b{color:var(--ink-2)}
+.themebtn{position:fixed;top:14px;right:14px;z-index:40;width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--ink);cursor:pointer;font-size:16px;box-shadow:var(--shadow)}
+.empty{color:var(--muted);font-size:13px;padding:20px 0;text-align:center}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:10px 2px 2px;font-size:12.5px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<button class="themebtn" id="themeBtn" title="Cambiar tema" aria-label="Cambiar tema">◑</button>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <circle cx="20" cy="20" r="19" fill="var(--brand-soft)"/>
+        <path d="M9 27c6-1 9-4 12-9 2-3 4-6 8-7-1 4-3 7-6 10-3 3-8 6-14 6z" fill="var(--brand)"/>
+        <path d="M20 18c4-5 9-8 15-9-3 3-5 5-6 8" stroke="var(--amber-line)" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <circle cx="14.5" cy="22.5" r="1.5" fill="var(--surface)"/>
+      </svg>
+      <div>
+        <h1>Ensífera · Impacto en Ventas</h1>
+        <div class="sub">Aviturismo &amp; guías de aves · Tablero interactivo de resultados publicitarios</div>
+      </div>
+    </div>
+    <p class="tagline">Lee el impacto de la inversión publicitaria sobre las ventas de Ensífera en cualquier rango de fechas: gastos, ventas, ROAS, ventas por sede, productos y conversaciones — con la cuenta <b>Meta Ads Ensifera COP</b> conectada para verificar.</p>
+  </header>
+
+  <div class="controls">
+    <div class="ctl-row">
+      <div class="presets" id="presets" role="group" aria-label="Rangos rápidos"></div>
+      <div class="dates">
+        <label class="cmp"><input type="checkbox" id="cmpToggle"> Comparar vs periodo anterior</label>
+        <label for="from">Desde</label><input type="date" id="from">
+        <label for="to">Hasta</label><input type="date" id="to">
+      </div>
+    </div>
+    <div class="range-note" id="rangeNote"></div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <section>
+    <div class="sec-head">
+      <div><div class="eyebrow">Serie diaria</div><h2>Impacto en Ventas</h2></div>
+      <div class="desc">Ventas, inversión publicitaria y retorno (ROAS) día a día en el rango elegido. Cada gráfico usa una sola escala — pasa el cursor para ver el detalle.</div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart"><h3>Ventas diarias</h3><div class="ch-sub">COP</div><div class="plot" id="c-sales"></div></div>
+      <div class="chart"><h3>Inversión diaria</h3><div class="ch-sub">COP · gasto publicitario</div><div class="plot" id="c-spend"></div></div>
+      <div class="chart"><h3>ROAS diario</h3><div class="ch-sub">Ventas ÷ inversión (veces)</div><div class="plot" id="c-roas"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div><div class="eyebrow">Punto de venta</div><h2>Ventas por sede</h2></div>
+      <div class="desc">Dónde se concretaron las ventas atribuidas a la pauta. El desglose por sede se registra desde julio.</div>
+    </div>
+    <div class="cols" style="margin-top:6px">
+      <div class="barlist" id="sedeSalesList"></div>
+      <div class="plot" id="c-sedeStack"></div>
+    </div>
+  </section>
+
+  <div class="cols">
+    <section style="margin-bottom:0">
+      <div class="sec-head"><div><div class="eyebrow">Pauta</div><h2>Campañas y anuncios</h2></div></div>
+      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Inversión, impresiones y resultados por campaña/anuncio en el rango (registro de la hoja).</div>
+      <div class="scroll"><table class="tbl" id="campTbl"></table></div>
+    </section>
+    <section style="margin-bottom:0">
+      <div class="sec-head"><div><div class="eyebrow">Conversaciones</div><h2>Sedes que atienden</h2></div></div>
+      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Conversaciones atendidas por cada sede (Cali, Medellín, Bogotá).</div>
+      <div class="barlist" id="sedesConvList"></div>
+    </section>
+  </div>
+
+  <div class="cols">
+    <section style="margin-bottom:0">
+      <div class="sec-head"><div><div class="eyebrow">Demanda</div><h2>Productos más consultados</h2></div></div>
+      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Ranking de productos por conversaciones generadas.</div>
+      <div class="barlist" id="prodList"></div>
+    </section>
+    <section style="margin-bottom:0">
+      <div class="sec-head"><div><div class="eyebrow">Meta Ads · Ensifera COP</div><h2>Cuenta conectada</h2></div></div>
+      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Desempeño real de las campañas en la cuenta Ensifera COP (detalle disponible 15–30 jul).</div>
+      <div class="scroll"><table class="tbl" id="metaTbl"></table></div>
+    </section>
+  </div>
+
+  <section>
+    <div class="sec-head"><div><div class="eyebrow">Verificación</div><h2>Hoja ↔ Meta Ads</h2></div>
+      <div class="desc">Reconciliación de la inversión registrada en la hoja contra la cuenta real Ensifera COP.</div></div>
+    <div id="recon"></div>
+  </section>
+
+  <footer id="footer"></footer>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+const DATA = /*__DATA__*/ {};
+</script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const fmtCOP=v=> v==null?"—":"$"+Math.round(v).toLocaleString("es-CO");
+const fmtCOPk=v=>{ if(v==null)return "—"; const a=Math.abs(v); if(a>=1e6)return "$"+(v/1e6).toFixed(1)+"M"; if(a>=1e3)return "$"+Math.round(v/1e3)+"k"; return "$"+Math.round(v);};
+const fmtN=v=> v==null?"—":Math.round(v).toLocaleString("es-CO");
+const fmtX=v=> v==null?"—":v.toFixed(2)+"×";
+const USDCOP=DATA.usdCop||3600;
+const SEDE_ORDER=["Palmira","Cali","Medellín","Bogotá"];
+const SEDE_COLOR={Palmira:"var(--brand)",Cali:"var(--s1)","Medellín":"var(--s2)","Bogotá":"var(--s4)"};
+
+// meta daily by date
+const metaByDate={};
+(DATA.meta.daily||[]).forEach(r=>{(metaByDate[r.date]=metaByDate[r.date]||{spend:0,impr:0,clicks:0});const m=metaByDate[r.date];m.spend+=r.spend;m.impr+=r.impressions;m.clicks+=r.clicks;});
+
+const days=DATA.days.map(d=>({
+  date:d.date, month:d.month,
+  spendCOP:d.spendCOP!=null?d.spendCOP:null,
+  impressions:d.impressions||0, reach:d.reach||0, resultsAds:d.resultsAds||0,
+  conversations:d.conversations!=null?d.conversations:null,
+  costConvCOP:d.costConvCOP!=null?d.costConvCOP:null,
+  salesCOP:(d.salesCOP!=null&&d.salesCOP>0)?d.salesCOP:null,
+  roasSheet:d.roas,
+  ticketConvPct:d.ticketConvPct,
+  salesBySede:d.salesBySede||{}, sedesConv:d.sedesConv||{}, products:d.products||{},
+  campaigns:d.campaigns||[],
+  metaSpend: metaByDate[d.date]?metaByDate[d.date].spend:null
+}));
+days.forEach(d=>{ d.roas = (d.salesCOP!=null&&d.spendCOP>0)? d.salesCOP/d.spendCOP : null; });
+const allDates=days.map(d=>d.date).sort();
+const DMIN=allDates[0], DMAX=allDates[allDates.length-1];
+
+const iso=d=>d.toISOString().slice(0,10);
+const parse=s=>{const[y,m,dd]=s.split("-").map(Number);return new Date(Date.UTC(y,m-1,dd));};
+const addDays=(s,n)=>{const d=parse(s);d.setUTCDate(d.getUTCDate()+n);return iso(d);};
+const daySpan=(a,b)=>Math.round((parse(b)-parse(a))/864e5)+1;
+const MES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const short=s=>{const[,m,d]=s.split("-").map(Number);return d+" "+MES[m-1];};
+const long=s=>{const[y,m,d]=s.split("-").map(Number);return d+" "+MES[m-1]+" "+y;};
+
+let state={from:DMIN,to:DMAX,compare:false};
+const inRange=(d,f,t)=>d.date>=f&&d.date<=t;
+
+function agg(f,t){
+  const sel=days.filter(d=>inRange(d,f,t));
+  let spend=0,spendN=0,sales=0,salesN=0,conv=0,impr=0;
+  const sedeSales={},sedeConv={},prods={},camps={};
+  sel.forEach(d=>{
+    if(d.spendCOP!=null){spend+=d.spendCOP;spendN++;}
+    if(d.salesCOP!=null){sales+=d.salesCOP;salesN++;}
+    if(d.conversations!=null)conv+=d.conversations;
+    impr+=d.impressions;
+    for(const k in d.salesBySede)sedeSales[k]=(sedeSales[k]||0)+d.salesBySede[k];
+    for(const k in d.sedesConv)sedeConv[k]=(sedeConv[k]||0)+d.sedesConv[k];
+    for(const k in d.products)prods[k]=(prods[k]||0)+d.products[k];
+    d.campaigns.forEach(c=>{const o=camps[c.name]=camps[c.name]||{name:c.name,spendCOP:0,impressions:0,results:0};
+      if(c.spendCOP)o.spendCOP+=c.spendCOP; if(c.impressions)o.impressions+=c.impressions; if(c.results)o.results+=c.results;});
+  });
+  return {sel,spend,spendN,sales,salesN,conv,impr,roas:spend>0?sales/spend:null,cpc:conv>0?spend/conv:null,sedeSales,sedeConv,prods,camps};
+}
+
+// ---- KPIs ----
+function kpiCards(){
+  const a=agg(state.from,state.to);
+  let prev=null;
+  if(state.compare){const span=daySpan(state.from,state.to);const pt=addDays(state.from,-1),pf=addDays(pt,-(span-1));prev=agg(pf,pt);}
+  const cards=[
+    {k:"Ventas totales",dot:"var(--brand)",v:fmtCOP(a.sales),sec:a.salesN+" días con ventas",cur:a.sales,prev:prev?prev.sales:null,better:"up"},
+    {k:"Inversión (ads)",dot:"var(--amber-line)",v:fmtCOP(a.spend),sec:a.spendN+" días activos",cur:a.spend,prev:prev?prev.spend:null,better:"down"},
+    {k:"ROAS",dot:"var(--teal)",v:fmtX(a.roas),sec:"retorno por peso invertido",cur:a.roas,prev:prev?prev.roas:null,better:"up"},
+    {k:"Conversaciones",dot:"var(--s1)",v:fmtN(a.conv),sec:(a.cpc!=null?fmtCOP(a.cpc)+" c/u":""),cur:a.conv,prev:prev?prev.conv:null,better:"up"},
+    {k:"Costo / conversación",dot:"var(--s2)",v:fmtCOP(a.cpc),sec:"inversión ÷ conversaciones",cur:a.cpc,prev:prev?prev.cpc:null,better:"down"},
+    {k:"Impresiones",dot:"var(--s3)",v:fmtN(a.impr),sec:"alcance de los anuncios",cur:a.impr,prev:prev?prev.impr:null,better:"up"},
+  ];
+  $("#kpis").innerHTML=cards.map(c=>{
+    let d="";
+    if(prev&&c.prev!=null&&c.cur!=null&&c.prev!==0){
+      const ch=(c.cur-c.prev)/Math.abs(c.prev)*100;
+      const good=c.better==="up"?ch>=0:ch<=0;
+      const cls=Math.abs(ch)<0.5?"flat":(good?"up":"down");
+      const ar=ch>0.5?"▲":ch<-0.5?"▼":"▪";
+      d=`<div class="delta ${cls}">${ar} ${Math.abs(ch).toFixed(0)}% vs anterior</div>`;
+    }
+    return `<div class="kpi"><div class="k"><span class="dot" style="background:${c.dot}"></span>${c.k}</div><div class="v tnum">${c.v}</div><div class="sec">${c.sec||"&nbsp;"}</div>${d}</div>`;
+  }).join("");
+}
+
+// ---- line chart (single series, null-aware) ----
+function lineChart(el,pts,opts){
+  opts=opts||{};
+  const W=340,H=150,PL=42,PR=10,PT=12,PB=22;
+  const data=pts.filter(p=>p.v!=null);
+  if(!data.length){el.innerHTML='<div class="empty">Sin datos en el rango</div>';return;}
+  const n=pts.length;
+  const maxV=Math.max(...data.map(p=>p.v)); const top=maxV*1.12||1; const bot=0;
+  const X=i=>PL+(n<=1?0:(i/(n-1))*(W-PL-PR));
+  const Y=v=>PT+(1-(v-bot)/((top-bot)||1))*(H-PT-PB);
+  const color=opts.color||"var(--brand)", fill=opts.fill||color;
+  let grid="",ticks="";
+  for(let g=0;g<=3;g++){const val=bot+(top-bot)*g/3,y=Y(val);
+    grid+=`<line x1="${PL}" y1="${y.toFixed(1)}" x2="${W-PR}" y2="${y.toFixed(1)}" stroke="var(--grid)" stroke-width="1"/>`;
+    ticks+=`<text x="${PL-6}" y="${(y+3.5).toFixed(1)}" text-anchor="end" font-size="9" fill="var(--muted)" class="tnum">${opts.fmtY?opts.fmtY(val):Math.round(val)}</text>`;}
+  let segs=[],cur=[];
+  pts.forEach((p,i)=>{if(p.v==null){if(cur.length)segs.push(cur);cur=[];}else cur.push([X(i),Y(p.v)]);});
+  if(cur.length)segs.push(cur);
+  let area="",line="",dots="";
+  segs.forEach(seg=>{
+    if(seg.length===1){dots+=`<circle cx="${seg[0][0].toFixed(1)}" cy="${seg[0][1].toFixed(1)}" r="2.6" fill="${color}"/>`;return;}
+    line+=`<path d="${seg.map((s,i)=>(i?'L':'M')+s[0].toFixed(1)+' '+s[1].toFixed(1)).join(' ')}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(opts.area!==false){const base=Y(bot);area+=`<path d="M${seg[0][0].toFixed(1)} ${base.toFixed(1)} ${seg.map(s=>'L'+s[0].toFixed(1)+' '+s[1].toFixed(1)).join(' ')} L${seg[seg.length-1][0].toFixed(1)} ${base.toFixed(1)} Z" fill="${fill}" opacity="${opts.areaOp||.13}"/>`;}
+  });
+  const lastDef=[...pts].map((p,i)=>[p,i]).filter(a=>a[0].v!=null).pop();
+  let end=lastDef?`<circle cx="${X(lastDef[1]).toFixed(1)}" cy="${Y(lastDef[0].v).toFixed(1)}" r="3.4" fill="${color}" stroke="var(--surface)" stroke-width="1.5"/>`:"";
+  let xlab="";[0,Math.floor((n-1)/2),n-1].forEach(i=>{if(i>=0&&i<n)xlab+=`<text x="${X(i).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="9" fill="var(--muted)">${short(pts[i].x)}</text>`;});
+  let hit="";pts.forEach((p,i)=>{if(p.v!=null)hit+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="9" fill="transparent" data-i="${i}"/>`;});
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">${grid}${area}${line}${dots}${end}${ticks}${xlab}<g class="hit">${hit}</g></svg>`;
+  el.querySelectorAll(".hit circle").forEach(c=>{
+    c.addEventListener("mousemove",ev=>{const i=+c.dataset.i,p=pts[i];showTip(ev,`<div class="tt">${long(p.x)}</div><div class="tr"><span>${opts.label||"Valor"}</span><b>${opts.fmtTip?opts.fmtTip(p.v):p.v}</b></div>${p.extra||""}`);});
+    c.addEventListener("mouseleave",hideTip);
+  });
+}
+
+// ---- stacked sede bars per day ----
+function sedeStack(el,sel){
+  const rows=sel.filter(d=>Object.keys(d.salesBySede).length && Object.values(d.salesBySede).some(v=>v>0));
+  if(!rows.length){el.innerHTML='<div class="empty">Sin desglose por sede en el rango</div>';return;}
+  const W=340,H=150,PL=42,PR=10,PT=12,PB=22;
+  const n=rows.length;
+  const totals=rows.map(d=>SEDE_ORDER.reduce((s,k)=>s+(d.salesBySede[k]||0),0));
+  const max=Math.max(...totals)*1.1||1;
+  const bw=Math.min(18,(W-PL-PR)/n*0.7);
+  const X=i=>PL+(n<=1?(W-PL-PR)/2:(i/(n-1))*(W-PL-PR));
+  const Y=v=>PT+(1-v/max)*(H-PT-PB);
+  let grid="",ticks="";
+  for(let g=0;g<=3;g++){const val=max*g/3,y=Y(val);grid+=`<line x1="${PL}" y1="${y.toFixed(1)}" x2="${W-PR}" y2="${y.toFixed(1)}" stroke="var(--grid)" stroke-width="1"/>`;
+    ticks+=`<text x="${PL-6}" y="${(y+3.5).toFixed(1)}" text-anchor="end" font-size="9" fill="var(--muted)" class="tnum">${fmtCOPk(val)}</text>`;}
+  let bars="";
+  rows.forEach((d,i)=>{
+    let yb=Y(0);const cx=X(i);
+    SEDE_ORDER.forEach(k=>{const v=d.salesBySede[k]||0;if(v<=0)return;const h=(H-PT-PB)*v/max;const yt=yb-h;
+      bars+=`<rect x="${(cx-bw/2).toFixed(1)}" y="${yt.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0,h-1).toFixed(1)}" rx="1.5" fill="${SEDE_COLOR[k]}" data-i="${i}"/>`;
+      yb=yt;});
+  });
+  let xlab="";[0,Math.floor((n-1)/2),n-1].forEach(i=>{if(i>=0&&i<n)xlab+=`<text x="${X(i).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="9" fill="var(--muted)">${short(rows[i].date)}</text>`;});
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">${grid}${bars}${ticks}${xlab}</svg>`+
+    `<div class="legend">`+SEDE_ORDER.map(k=>`<span><span class="dot" style="background:${SEDE_COLOR[k]}"></span>${k}</span>`).join("")+`</div>`;
+  el.querySelectorAll("rect").forEach(r=>{
+    r.addEventListener("mousemove",ev=>{const d=rows[+r.dataset.i];
+      showTip(ev,`<div class="tt">${long(d.date)}</div>`+SEDE_ORDER.filter(k=>d.salesBySede[k]>0).map(k=>`<div class="tr"><span>${k}</span><b>${fmtCOP(d.salesBySede[k])}</b></div>`).join(""));});
+    r.addEventListener("mouseleave",hideTip);
+  });
+}
+
+const tip=$("#tip");
+function showTip(ev,html){tip.innerHTML=html;tip.style.opacity="1";let x=ev.clientX+14,y=ev.clientY+14;const r=tip.getBoundingClientRect();if(x+r.width>innerWidth-8)x=ev.clientX-r.width-14;if(y+r.height>innerHeight-8)y=ev.clientY-r.height-14;tip.style.left=x+"px";tip.style.top=y+"px";}
+function hideTip(){tip.style.opacity="0";}
+
+function renderCharts(){
+  const sel=days.filter(d=>inRange(d,state.from,state.to));
+  lineChart($("#c-sales"),sel.map(d=>({x:d.date,v:d.salesCOP,extra:d.roas!=null?`<div class="tr"><span>ROAS</span><b>${fmtX(d.roas)}</b></div>`:""})),{color:"var(--brand)",label:"Ventas",fmtTip:fmtCOP,fmtY:fmtCOPk});
+  lineChart($("#c-spend"),sel.map(d=>({x:d.date,v:d.spendCOP})),{color:"var(--amber-line)",fill:"var(--amber-line)",label:"Inversión",fmtTip:fmtCOP,fmtY:fmtCOPk});
+  lineChart($("#c-roas"),sel.map(d=>({x:d.date,v:d.roas})),{color:"var(--teal)",label:"ROAS",fmtTip:fmtX,fmtY:v=>v.toFixed(0)+"×",areaOp:.10});
+  sedeStack($("#c-sedeStack"),sel);
+}
+
+// ---- bar lists ----
+function barList(el,entries,opts){
+  opts=opts||{};
+  entries=entries.filter(e=>e[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,opts.limit||8);
+  if(!entries.length){el.innerHTML='<div class="empty">Sin datos en el rango</div>';return;}
+  const max=Math.max(...entries.map(e=>e[1])), tot=entries.reduce((s,e)=>s+e[1],0);
+  const money=opts.money;
+  el.innerHTML=entries.map((e,i)=>{
+    const col=opts.colorMap?(opts.colorMap[e[0]]||"var(--brand)"):(opts.colors?opts.colors[i%opts.colors.length]:"var(--brand)");
+    const val=money?fmtCOP(e[1]):fmtN(e[1]);
+    return `<div class="bar-row"><div class="bar-lab" title="${e[0]}"><span class="dot" style="background:${col}"></span>${e[0]}</div><div class="bar-track"><div class="bar-fill" style="width:${(e[1]/max*100).toFixed(1)}%;background:${col}"></div></div><div class="bar-val tnum">${val} <span style="color:var(--muted);font-weight:400">· ${(e[1]/tot*100).toFixed(0)}%</span></div></div>`;
+  }).join("");
+}
+
+// ---- campaigns table (sheet) ----
+function renderCamps(){
+  const a=agg(state.from,state.to);
+  let rows=Object.values(a.camps).filter(c=>c.spendCOP>0||c.impressions>0).sort((x,y)=>y.spendCOP-x.spendCOP).slice(0,10);
+  const el=$("#campTbl");
+  if(!rows.length){el.innerHTML='<tbody><tr><td class="empty" colspan="5">Sin datos en el rango</td></tr></tbody>';return;}
+  let tS=0,tI=0,tR=0;Object.values(a.camps).forEach(c=>{tS+=c.spendCOP;tI+=c.impressions;tR+=c.results;});
+  const pal=["var(--s1)","var(--s2)","var(--s3)","var(--s4)","var(--brand)","var(--amber-line)","var(--teal)"];
+  el.innerHTML=`<thead><tr><th>Campaña / Anuncio</th><th>Inversión</th><th>Impres.</th><th>Result.</th><th>Costo/res.</th></tr></thead><tbody>`+
+    rows.map((r,i)=>`<tr><td class="name"><span class="dot" style="background:${pal[i%pal.length]}"></span>${r.name}</td><td class="tnum">${fmtCOP(r.spendCOP)}</td><td class="tnum">${fmtN(r.impressions)}</td><td class="tnum">${fmtN(r.results)}</td><td class="tnum">${fmtCOP(r.results?r.spendCOP/r.results:null)}</td></tr>`).join("")+
+    `</tbody><tfoot><tr><td>Total (${Object.keys(a.camps).length})</td><td class="tnum">${fmtCOP(tS)}</td><td class="tnum">${fmtN(tI)}</td><td class="tnum">${fmtN(tR)}</td><td></td></tr></tfoot>`;
+}
+
+// ---- meta account table ----
+function renderMeta(){
+  const el=$("#metaTbl");
+  const inr=(DATA.meta.daily||[]).filter(r=>r.date>=state.from&&r.date<=state.to);
+  let rows;
+  if(inr.length){const by={};inr.forEach(r=>{const o=by[r.camp]=by[r.camp]||{camp:r.camp,spend:0,impr:0,clicks:0};o.spend+=r.spend;o.impr+=r.impressions;o.clicks+=r.clicks;});rows=Object.values(by);}
+  else rows=(DATA.meta.campaignTotals||[]).map(c=>({camp:c.name,spend:c.spend,impr:c.impressions,clicks:c.clicks}));
+  rows.sort((a,b)=>b.spend-a.spend);
+  const pal=["var(--s1)","var(--s2)","var(--s3)","var(--s4)"];
+  let tS=0,tI=0,tC=0;rows.forEach(r=>{tS+=r.spend;tI+=r.impr;tC+=r.clicks;});
+  el.innerHTML=`<thead><tr><th>Campaña</th><th>Inversión</th><th>Impres.</th><th>Clics</th></tr></thead><tbody>`+
+    rows.map((r,i)=>`<tr><td class="name"><span class="dot" style="background:${pal[i%4]}"></span>${r.camp.replace(/^WPP\//,'')}</td><td class="tnum">${fmtCOP(r.spend)}</td><td class="tnum">${fmtN(r.impr)}</td><td class="tnum">${fmtN(r.clicks)}</td></tr>`).join("")+
+    `</tbody><tfoot><tr><td>Total</td><td class="tnum">${fmtCOP(tS)}</td><td class="tnum">${fmtN(tI)}</td><td class="tnum">${fmtN(tC)}</td></tr></tfoot>`;
+}
+
+// ---- reconciliation ----
+function renderRecon(){
+  const inr=days.filter(d=>inRange(d,state.from,state.to)&&d.metaSpend!=null);
+  let sheetSum=0,metaSum=0;inr.forEach(d=>{sheetSum+=d.spendCOP;metaSum+=d.metaSpend;});
+  const el=$("#recon");
+  let html="";
+  if(inr.length){
+    const diff=metaSum?(sheetSum-metaSum)/metaSum*100:0, ok=Math.abs(diff)<2;
+    html+=`<div class="recon">
+      <div class="kpi" style="box-shadow:none"><div class="k"><span class="dot" style="background:var(--amber-line)"></span>Registrado en hoja</div><div class="v tnum" style="font-size:22px">${fmtCOP(sheetSum)}</div><div class="sec">${inr.length} días con datos en ambas fuentes</div></div>
+      <div class="kpi" style="box-shadow:none"><div class="k"><span class="dot" style="background:var(--s1)"></span>Real en Ensifera COP</div><div class="v tnum" style="font-size:22px">${fmtCOP(metaSum)}</div><div class="sec ${ok?'match':''}">${ok?'✓ Coincide':'Δ '+diff.toFixed(1)+'%'} con la hoja</div></div>
+    </div>`;
+    html+=`<div class="note"><b>Verificado.</b> En los días con detalle de Meta (15–30 jul), el gasto anotado en la hoja corresponde a la cuenta <b>Ensifera COP</b> (campañas WPP/ENS/EDIT, SOUV, TOUR). A partir de ~28 jul los creativos cambiaron a nuevos anuncios (GMAMIF, AVMHERCOL, GCAMPAVCOL) dentro de la misma operación.</div>`;
+  } else {
+    html+=`<div class="note">Este rango no cruza con el detalle diario de Meta Ads (disponible 15–30 jul). La inversión mostrada proviene del registro de la hoja. En junio y comienzos de julio la pauta corría en una cuenta en USD (convertida a COP × ${USDCOP}).</div>`;
+  }
+  el.innerHTML=html;
+}
+
+function renderAll(){
+  if(state.from>state.to){const t=state.from;state.from=state.to;state.to=t;}
+  $("#from").value=state.from;$("#to").value=state.to;
+  $("#rangeNote").innerHTML=`Mostrando <b style="color:var(--ink-2)">${long(state.from)}</b> → <b style="color:var(--ink-2)">${long(state.to)}</b> · ${daySpan(state.from,state.to)} días`+(state.compare?` · comparando con el periodo previo de igual duración`:``);
+  $$("#presets .chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.f===state.from&&c.dataset.t===state.to?"true":"false"));
+  const a=agg(state.from,state.to);
+  kpiCards(); renderCharts(); renderCamps(); renderMeta(); renderRecon();
+  // ventas por sede list (+ sin desglose)
+  const sedeEntries=SEDE_ORDER.map(k=>[k,a.sedeSales[k]||0]);
+  const sedeSum=sedeEntries.reduce((s,e)=>s+e[1],0);
+  const noBreak=Math.max(0,a.sales-sedeSum);
+  const list=sedeEntries.slice();
+  if(noBreak>0)list.push(["Sin desglose (jun–jul)",noBreak]);
+  barList($("#sedeSalesList"),list,{money:true,colorMap:Object.assign({},SEDE_COLOR,{"Sin desglose (jun–jul)":"var(--muted)"}),limit:6});
+  barList($("#sedesConvList"),Object.entries(a.sedeConv),{colorMap:{"Ensifera Cali":"var(--s1)","Ensifera Medellín":"var(--s2)","Ensifera Bogotá":"var(--s4)"},colors:["var(--s1)","var(--s2)","var(--s4)","var(--s3)"]});
+  barList($("#prodList"),Object.entries(a.prods),{colors:["var(--brand)"],limit:8});
+}
+
+const presets=[
+  {label:"Todo",f:DMIN,t:DMAX},
+  {label:"Junio",f:"2026-06-23",t:"2026-06-30"},
+  {label:"Julio",f:"2026-07-01",t:"2026-07-31"},
+  {label:"Agosto",f:"2026-08-01",t:DMAX},
+  {label:"Ensifera COP (jul)",f:"2026-07-15",t:"2026-07-30"},
+  {label:"Últimos 7 días",f:addDays(DMAX,-6),t:DMAX},
+];
+$("#presets").innerHTML=presets.map(p=>`<button class="chip" data-f="${p.f}" data-t="${p.t}">${p.label}</button>`).join("");
+$$("#presets .chip").forEach(c=>c.addEventListener("click",()=>{state.from=c.dataset.f;state.to=c.dataset.t;renderAll();}));
+$("#from").addEventListener("change",e=>{state.from=e.target.value;renderAll();});
+$("#to").addEventListener("change",e=>{state.to=e.target.value;renderAll();});
+$("#cmpToggle").addEventListener("change",e=>{state.compare=e.target.checked;renderAll();});
+$("#from").min=DMIN;$("#from").max=DMAX;$("#to").min=DMIN;$("#to").max=DMAX;
+$("#themeBtn").addEventListener("click",()=>{const cur=document.documentElement.getAttribute("data-theme");const dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-theme",dark?"light":"dark");renderAll();});
+
+$("#footer").innerHTML=`<b>Fuentes:</b> Hoja «Conglomerado Gastos Publicitarios 2026» (Google Drive) · Cuenta Meta Ads <b>Ensifera COP</b> (ID 1580457616921076, moneda COP). `+
+  `Rango de datos: ${long(DMIN)} — ${long(DMAX)} (${days.length} días). Detalle diario de Meta Ads: 15–30 jul 2026. `+
+  `ROAS = ventas ÷ inversión publicitaria. Inversión previa al 16 jul convertida de USD a COP × ${USDCOP}. El desglose de ventas por sede se registra desde julio. `+
+  `Tablero generado para Ensífera · JK Marketing.`;
+
+window.addEventListener("resize",()=>{clearTimeout(window._rz);window._rz=setTimeout(renderCharts,150);});
+renderAll();
+})();
+</script>

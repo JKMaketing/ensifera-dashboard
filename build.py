@@ -235,7 +235,35 @@ def main():
     by_date = {}
     for d in sorted(all_days, key=lambda d: d["date"]):
         by_date[d["date"]] = d
-    days = list(by_date.values())
+
+    # Suplementar con meta_daily.json: agrega días de Meta Ads que no están en la hoja
+    meta_daily_path = os.path.join(HERE, "meta_daily.json")
+    if os.path.exists(meta_daily_path):
+        with open(meta_daily_path, encoding="utf-8") as mf:
+            meta_data = json.load(mf)
+        n_added = 0
+        for md in meta_data.get("days", []):
+            if md["date"] not in by_date:
+                mo_num = int(md["date"][5:7])
+                mo_name = list(MONTHNUM.keys())[mo_num - 1]
+                by_date[md["date"]] = {
+                    "date": md["date"], "month": mo_name.capitalize(),
+                    "spendCOP": md.get("spendCOP"), "spendUSD": None,
+                    "impressions": md.get("impressions", 0), "reach": 0,
+                    "resultsAds": md.get("resultsAds", 0), "conversations": None,
+                    "costConvCOP": None, "salesCOP": None, "roas": None,
+                    "invSalePct": None, "ticketConvPct": None,
+                    "salesBySede": {}, "sedesConv": {}, "agents": {}, "products": {},
+                    "campaigns": [{"name": c["name"], "spendCOP": c.get("spendCOP"),
+                                   "impressions": c.get("impressions"), "reach": None,
+                                   "results": c.get("results")}
+                                  for c in md.get("campaigns", [])],
+                }
+                n_added += 1
+        if n_added:
+            sys.stderr.write(f"  + {n_added} dias adicionales de meta_daily.json\n")
+
+    days = sorted(by_date.values(), key=lambda d: d["date"])
     if not days:
         sys.exit("ERROR: no se encontraron dias en la hoja.")
 

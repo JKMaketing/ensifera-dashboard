@@ -25,7 +25,17 @@ jobs:
           python-version: "3.12"
 
       - name: Instalar dependencias
-        run: pip install openpyxl
+        run: pip install openpyxl requests
+
+      - name: Actualizar datos Meta Ads (meta_daily.json)
+        env:
+          META_ADS_TOKEN: ${{ secrets.META_ADS_TOKEN }}
+        run: |
+          if [ -n "$META_ADS_TOKEN" ]; then
+            python fetch_meta.py
+          else
+            echo "META_ADS_TOKEN no configurado — usando meta_daily.json guardado en repo."
+          fi
 
       - name: Regenerar index.html desde la hoja
         run: python build.py

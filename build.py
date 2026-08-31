@@ -203,6 +203,25 @@ def parse_sheet(ws_rows, ws_name):
     for i in range(n):
         m = re.match(r"^GASTOS PUBLICITARIOS\s+(\d+)\s+([A-Za-zÀ-ɏ]+)", s(cell(rows[i], 0)))
         if m: markers.append((i, int(m.group(1)), m.group(2).upper()))
+    # Pre-GASTOS: capturar ventas de canal Página Web (bloque sin GASTOS diarios)
+    # Col B=1→día 1, C=2→día 2, etc. (H=7→Aug 7 tiene $139.600 en agosto 2026)
+    web_by_day = {}
+    if markers:
+        in_web = False
+        for ri in range(markers[0][0]):
+            c0i = s(cell(rows[ri], 0))
+            if re.search(r"GINA WEB", c0i, re.IGNORECASE):
+                in_web = True; continue
+            if in_web:
+                if c0i == "Ventas Totales":
+                    for ci in range(1, ncol):
+                        v = cint(cell(rows[ri], ci))
+                        if v and v > 0:
+                            web_by_day[ci] = rnd(v)
+                    in_web = False
+                elif re.match(r"^(PAGO TOTAL|AGENCIA JK)", c0i):
+                    in_web = False
+
     out = []
     for mi in range(len(markers)):
         start = markers[mi][0]
@@ -333,6 +352,10 @@ def parse_sheet(ws_rows, ws_name):
         spend_cop = summ.get("spendCOP")
         if spend_cop is None:
             spend_cop = gasto_cop if gasto_cop is not None else (rnd(gasto_usd * 3600) if gasto_usd is not None else None)
+        web_extra = web_by_day.get(markers[mi][1], 0)
+        day_sales = summ.get("salesCOP")
+        if web_extra:
+            day_sales = (day_sales or 0) + web_extra
         out.append({
             "date": date, "month": ws_name,
             "spendCOP": rnd(spend_cop),
@@ -340,7 +363,7 @@ def parse_sheet(ws_rows, ws_name):
             "impressions": int(impr), "reach": int(reach), "resultsAds": int(res),
             "conversations": rnd(summ.get("conversations")),
             "costConvCOP": rnd(summ.get("costConvCOP")),
-            "salesCOP": rnd(summ.get("salesCOP")),
+            "salesCOP": rnd(day_sales),
             "roas": summ.get("roas"),
             "invSalePct": summ.get("invSalePct"),
             "ticketConvPct": summ.get("ticketConvPct"),

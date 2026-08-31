@@ -185,6 +185,12 @@ def parse_sheet(ws):
                 v = cint(cell(row, 1))
                 sales_by_sede[sede] = rnd(v) if v is not None else 0
                 r += 1; continue
+            # Ventas Totales standalone (fila agregado antes del bloque NOMBRE)
+            if c0 == "Ventas Totales":
+                v = cint(cell(row, 1))
+                if v is not None:
+                    summ["salesCOP"] = rnd(v)
+                r += 1; continue
             # trailing NOMBRE summary
             if c0 == "NOMBRE":
                 dd = pdate(cell(row, 1))
@@ -195,7 +201,10 @@ def parse_sheet(ws):
                     elif re.search(r"Inversion PC", lbl): summ["spendCOP"] = cint(val)
                     elif lbl == "Conversaciones": summ["conversations"] = cint(val)
                     elif re.search(r"Costo Conversaci", lbl): summ["costConvCOP"] = cint(val)
-                    elif lbl == "Ventas Totales": summ["salesCOP"] = cint(val)
+                    elif lbl == "Ventas Totales":
+                        v = cint(val)
+                        if v is not None:
+                            summ["salesCOP"] = v
                     elif re.search(r"Inversion Venta", lbl): summ["invSalePct"] = cpct(val)
                     elif lbl == "ROAS": summ["roas"] = croas(val)
                     elif re.search(r"Ticket Conversi", lbl): summ["ticketConvPct"] = cpct(val)

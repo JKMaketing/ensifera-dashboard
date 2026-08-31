@@ -232,6 +232,13 @@ def parse_sheet(ws_rows, ws_name):
                 j = r + 1
                 while j < end:
                     r2 = rows[j]; gt = False
+                    # Si encontramos inicio de seccion (antes de GASTO TOTAL), la tabla
+                    # de campañas termino aqui — salir para que el outer loop los procese.
+                    c0j = s(cell(r2, 0))
+                    if re.match(r"^(CONVERSACIONES|MENSAJES|PRODUCTOS|NOMBRE|GASTOS PUBLICITARIOS)", c0j) \
+                       or c0j == "Ventas Totales" \
+                       or re.match(r"^Ventas Totales\s+", c0j):
+                        break
                     for c in range(ncol):
                         if s(cell(r2, c)) == "GASTO TOTAL":
                             gt = True

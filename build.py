@@ -187,7 +187,9 @@ def parse_sheet(ws):
                 r += 1; continue
             # Ventas Totales standalone (fila agregado antes del bloque NOMBRE)
             if c0 == "Ventas Totales":
-                v = cint(cell(row, 1))
+                raw = cell(row, 1)
+                v = cint(raw)
+                print(f"  [DBG] standalone VT row={r+1} raw={raw!r} cint={v}")
                 if v is not None:
                     summ["salesCOP"] = rnd(v)
                 r += 1; continue

@@ -208,7 +208,10 @@ def parse_sheet(ws_rows, ws_name):
         start = markers[mi][0]
         end = markers[mi + 1][0] if mi + 1 < len(markers) else n
         campaigns, sedes_conv, agents, products, sales_by_sede, summ = [], {}, {}, {}, {}, {}
-        date = None; gasto_usd = gasto_cop = None
+        # Fecha canonica = dia+mes del marcador GASTOS (no la del bloque NOMBRE,
+        # que puede tener errores de captura en la hoja del cliente).
+        date = "2026-%02d-%02d" % (MONTHNUM.get(markers[mi][2], 1), markers[mi][1])
+        gasto_usd = gasto_cop = None
         impr = reach = res = 0.0
         r = start
         while r < end:
@@ -310,8 +313,6 @@ def parse_sheet(ws_rows, ws_name):
                 r += 1; continue
             # trailing NOMBRE summary
             if c0 == "NOMBRE":
-                dd = pdate(cell(row, 1))
-                if dd: date = dd
                 for j in range(r + 1, min(r + 11, end)):
                     lbl = s(cell(rows[j], 0)); val = cell(rows[j], 1)
                     if re.search(r"Inversi.n USD", lbl): summ["spendUSD"] = cusd(val)
@@ -328,8 +329,7 @@ def parse_sheet(ws_rows, ws_name):
                 r += 1; continue
             r += 1
 
-        if not date:
-            date = "2026-%02d-%02d" % (MONTHNUM.get(markers[mi][2], 1), markers[mi][1])
+        # date ya fue fijada al inicio del bloque con el marcador GASTOS
         spend_cop = summ.get("spendCOP")
         if spend_cop is None:
             spend_cop = gasto_cop if gasto_cop is not None else (rnd(gasto_usd * 3600) if gasto_usd is not None else None)

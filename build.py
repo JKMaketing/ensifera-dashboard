@@ -8,10 +8,10 @@ la combina con meta.json (instantanea de Meta Ads Ensifera COP) y la inyecta
 en template.html -> index.html. Disenado para correr desatendido (rutina nube).
 
 Uso:  python build.py
-Req:  pip install openpyxl
+Req:  pip install requests   (opcionalmente openpyxl para compatibilidad)
 """
-import io, os, re, json, sys, datetime, urllib.request
-from openpyxl import load_workbook
+import io, os, re, json, sys, datetime, zipfile, urllib.request
+from xml.etree import ElementTree as ET
 
 FILE_ID = "1sxBiAsb0sUOLqYNr3H7l-VhN6DpN-Boh"
 URL = "https://docs.google.com/spreadsheets/d/%s/export?format=xlsx" % FILE_ID
@@ -20,6 +20,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 MONTHNUM = {"ENERO":1,"FEBRERO":2,"MARZO":3,"ABRIL":4,"MAYO":5,"JUNIO":6,
             "JULIO":7,"AGOSTO":8,"SEPTIEMBRE":9,"OCTUBRE":10,"NOVIEMBRE":11,"DICIEMBRE":12}
 
+# ---------------------------------------------------------------------------
+# Helpers de valor
+# ---------------------------------------------------------------------------
 def s(x):
     return "" if x is None else str(x).strip()
 
@@ -85,10 +88,117 @@ def pdate(x):
 def rnd(v):
     return None if v is None else int(round(v))
 
-def parse_sheet(ws):
-    rows = [list(r) for r in ws.iter_rows(values_only=True)]
+# ---------------------------------------------------------------------------
+# Parser XML directo del xlsx (reemplaza openpyxl para robustez)
+# ---------------------------------------------------------------------------
+_NS  = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
+_RNS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+_PNS = 'http://schemas.openxmlformats.org/package/2006/relationships'
+
+def _col_idx(col_str):
+    idx = 0
+    for ch in col_str.upper():
+        idx = idx * 26 + (ord(ch) - ord('A') + 1)
+    return idx - 1
+
+def _cell_ref(ref):
+    m = re.match(r'([A-Za-z]+)(\d+)', ref or '')
+    if not m: return None, None
+    return _col_idx(m.group(1)), int(m.group(2)) - 1
+
+def load_wb_raw(xlsx_bytes):
+    """
+    Parsea un xlsx como ZIP y devuelve {ws_name: [[fila0], [fila1], ...]}
+    donde cada valor de celda es float, str, bool o None.
+    Lee shared strings, formula-strings (t='str'), inline strings y numericos.
+    """
+    zf = zipfile.ZipFile(io.BytesIO(xlsx_bytes))
+    all_names = set(zf.namelist())
+
+    # 1. Shared strings
+    shared = []
+    if 'xl/sharedStrings.xml' in all_names:
+        root = ET.fromstring(zf.read('xl/sharedStrings.xml'))
+        for si in root.findall(f'.//{{{_NS}}}si'):
+            parts = si.findall(f'.//{{{_NS}}}t')
+            shared.append(''.join((p.text or '') for p in parts))
+
+    # 2. Relaciones workbook -> rutas de hojas
+    rels_root = ET.fromstring(zf.read('xl/_rels/workbook.xml.rels'))
+    rid_to_path = {}
+    for rel in rels_root.findall(f'{{{_PNS}}}Relationship'):
+        tgt = rel.get('Target', '')
+        tgt = ('xl/' + tgt) if not tgt.startswith('/') else tgt.lstrip('/')
+        rid_to_path[rel.get('Id')] = tgt
+
+    # 3. Hojas en orden desde workbook.xml
+    wb_root = ET.fromstring(zf.read('xl/workbook.xml'))
+    result = {}
+    for sheet_el in wb_root.findall(f'.//{{{_NS}}}sheet'):
+        ws_name = sheet_el.get('name', '')
+        rid = sheet_el.get(f'{{{_RNS}}}id')
+        path = rid_to_path.get(rid, '')
+        if path not in all_names:
+            continue
+
+        ws_root = ET.fromstring(zf.read(path))
+
+        # Primer paso: dimensiones
+        max_row = max_col = 0
+        for row_el in ws_root.findall(f'.//{{{_NS}}}row'):
+            r_attr = row_el.get('r')
+            if r_attr: max_row = max(max_row, int(r_attr))
+            for c_el in row_el.findall(f'{{{_NS}}}c'):
+                col_0, _ = _cell_ref(c_el.get('r', ''))
+                if col_0 is not None:
+                    max_col = max(max_col, col_0 + 1)
+
+        grid = [[None] * max_col for _ in range(max_row)]
+
+        # Segundo paso: leer valores
+        for row_el in ws_root.findall(f'.//{{{_NS}}}row'):
+            r_attr = row_el.get('r')
+            if not r_attr: continue
+            row_0 = int(r_attr) - 1
+            for c_el in row_el.findall(f'{{{_NS}}}c'):
+                col_0, _ = _cell_ref(c_el.get('r', ''))
+                if col_0 is None or row_0 >= len(grid): continue
+                row_grid = grid[row_0]
+                if col_0 >= len(row_grid): continue
+
+                t = c_el.get('t', 'n')
+                v_el  = c_el.find(f'{{{_NS}}}v')
+                is_el = c_el.find(f'{{{_NS}}}is')
+                val = None
+
+                if is_el is not None:
+                    texts = is_el.findall(f'.//{{{_NS}}}t')
+                    val = ''.join((tx.text or '') for tx in texts)
+                elif v_el is not None and v_el.text is not None:
+                    raw = v_el.text
+                    if t == 's':
+                        idx = int(raw)
+                        val = shared[idx] if 0 <= idx < len(shared) else raw
+                    elif t == 'str':
+                        val = raw
+                    elif t == 'b':
+                        val = (raw == '1')
+                    else:
+                        try: val = float(raw)
+                        except ValueError: val = raw
+
+                row_grid[col_0] = val
+
+        result[ws_name] = grid
+    return result
+
+# ---------------------------------------------------------------------------
+# Parser de hoja de calculo
+# ---------------------------------------------------------------------------
+def parse_sheet(ws_rows, ws_name):
+    rows = ws_rows
     n = len(rows)
-    ncol = ws.max_column or 0
+    ncol = max((len(r) for r in rows), default=0)
     markers = []
     for i in range(n):
         m = re.match(r"^GASTOS PUBLICITARIOS\s+(\d+)\s+([A-Za-zÀ-ɏ]+)", s(cell(rows[i], 0)))
@@ -185,11 +295,9 @@ def parse_sheet(ws):
                 v = cint(cell(row, 1))
                 sales_by_sede[sede] = rnd(v) if v is not None else 0
                 r += 1; continue
-            # Ventas Totales standalone (fila agregado antes del bloque NOMBRE)
+            # Ventas Totales standalone (agregado de sedes, antes o despues del bloque NOMBRE)
             if c0 == "Ventas Totales":
-                raw = cell(row, 1)
-                v = cint(raw)
-                print(f"  [DBG] standalone VT row={r+1} raw={raw!r} cint={v}")
+                v = cint(cell(row, 1))
                 if v is not None:
                     summ["salesCOP"] = rnd(v)
                 r += 1; continue
@@ -219,7 +327,7 @@ def parse_sheet(ws):
         if spend_cop is None:
             spend_cop = gasto_cop if gasto_cop is not None else (rnd(gasto_usd * 3600) if gasto_usd is not None else None)
         out.append({
-            "date": date, "month": ws.title,
+            "date": date, "month": ws_name,
             "spendCOP": rnd(spend_cop),
             "spendUSD": summ.get("spendUSD"),
             "impressions": int(impr), "reach": int(reach), "resultsAds": int(res),
@@ -239,10 +347,11 @@ def main():
     data = urllib.request.urlopen(URL, timeout=90).read()
     if data[:2] != b"PK":
         sys.exit("ERROR: la descarga no es un xlsx. La hoja debe estar compartida como 'Cualquiera con el enlace (Lector)'.")
-    wb = load_workbook(io.BytesIO(data), data_only=True)
+
+    raw_wb = load_wb_raw(data)
     all_days = []
-    for ws in wb.worksheets:
-        all_days.extend(parse_sheet(ws))
+    for ws_name, ws_rows in raw_wb.items():
+        all_days.extend(parse_sheet(ws_rows, ws_name))
     by_date = {}
     for d in sorted(all_days, key=lambda d: d["date"]):
         by_date[d["date"]] = d

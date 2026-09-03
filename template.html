@@ -463,8 +463,10 @@ function renderAll(){
   barList($("#prodList"),Object.entries(a.prods),{colors:["var(--brand)"],limit:8});
 }
 
+const _mesActual=(()=>{const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-01`;})();
 const presets=[
   {label:"Todo",f:DMIN,t:DMAX},
+  {label:"Este Mes",f:_mesActual,t:DMAX},
   {label:"Junio",f:"2026-06-23",t:"2026-06-30"},
   {label:"Julio",f:"2026-07-01",t:"2026-07-31"},
   {label:"Agosto",f:"2026-08-01",t:DMAX},

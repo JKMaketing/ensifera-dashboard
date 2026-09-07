@@ -194,16 +194,22 @@ footer b{color:var(--ink-2)}
 
   <div class="cols">
     <section style="margin-bottom:0">
-      <div class="sec-head"><div><div class="eyebrow">Demanda</div><h2>Productos más consultados</h2></div></div>
-      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Ranking de productos por conversaciones generadas.</div>
+      <div class="sec-head"><div><div class="eyebrow">Demanda</div><h2>Productos más preguntados</h2></div></div>
+      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Productos consultados este mes · vivo desde la hoja.</div>
       <div class="barlist" id="prodList"></div>
     </section>
     <section style="margin-bottom:0">
-      <div class="sec-head"><div><div class="eyebrow">Meta Ads · Ensifera COP</div><h2>Cuenta conectada</h2></div></div>
-      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Desempeño real de las campañas en la cuenta Ensifera COP (detalle disponible 15–30 jul).</div>
-      <div class="scroll"><table class="tbl" id="metaTbl"></table></div>
+      <div class="sec-head"><div><div class="eyebrow">Ventas</div><h2>Productos vendidos</h2></div></div>
+      <div class="desc" style="color:var(--ink-2);font-size:13.5px">Unidades cerradas este mes · vivo desde la hoja.</div>
+      <div class="barlist" id="prodSoldList"></div>
     </section>
   </div>
+
+  <section>
+    <div class="sec-head"><div><div class="eyebrow">Meta Ads · Ensifera COP</div><h2>Campañas conectadas</h2></div>
+      <div class="desc">Estado, inversión, alcance, clics, CTR, resultados y CPC por campaña. <span id="metaUpdated" style="color:var(--muted);font-size:12px"></span></div></div>
+    <div class="scroll"><table class="tbl" id="metaTbl"></table></div>
+  </section>
 
   <section>
     <div class="sec-head"><div><div class="eyebrow">Verificación</div><h2>Hoja ↔ Meta Ads</h2></div>
@@ -219,8 +225,71 @@ footer b{color:var(--ink-2)}
 const DATA = /*__DATA__*/ {};
 </script>
 <script>
-(function(){
+function _parseEnsiferaPivot(csv){
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<csv.length;i++){const c=csv[i];
+    if(q){if(c==='"'){if(csv[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+    else{if(c==='"')q=true;else if(c===','){row.push(f);f='';}else if(c==='\n'||c==='\r'){if(c==='\r'&&csv[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f='';}else f+=c;}}
+  if(f||row.length){row.push(f);rows.push(row);}
+  if(rows.length<3)return[];
+  const hdr=rows[1]||[];
+  const dateMap=[];
+  for(let c=1;c<hdr.length;c++){const cell=(hdr[c]||'').trim().replace(/\r$/,'');const m=cell.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(m)dateMap.push({col:c,date:`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`});}
+  if(!dateMap.length)return[];
+  const mr={};
+  for(let r=2;r<Math.min(30,rows.length);r++){const lbl=((rows[r][0]||'').trim().replace(/\r$/,'')).toLowerCase();
+    if(!mr.spend&&lbl.includes('inversion')&&(lbl.includes('pc')||lbl.includes('cop')))mr.spend=r;
+    else if(!mr.conv&&lbl==='conversaciones')mr.conv=r;
+    else if(!mr.sales&&lbl.includes('ventas totales'))mr.sales=r;
+    else if(!mr.roas&&lbl==='roas')mr.roas=r;}
+  const pm=s=>{const v=(s||'').replace(/[\s$\.]/g,'').replace(',','.');return v?parseFloat(v)||null:null;};
+  const result=[];
+  for(const{col,date}of dateMap){
+    const spendCOP=mr.spend!=null?pm((rows[mr.spend]||[])[col]):null;
+    const conversations=mr.conv!=null?pm((rows[mr.conv]||[])[col]):null;
+    const salesCOP=mr.sales!=null?pm((rows[mr.sales]||[])[col]):null;
+    const roas=mr.roas!=null?pm((rows[mr.roas]||[])[col]):null;
+    if(spendCOP==null&&conversations==null&&salesCOP==null)continue;
+    const costConvCOP=spendCOP&&conversations?Math.round(spendCOP/conversations):null;
+    result.push({date,spendCOP,conversations,resultsAds:conversations,salesCOP,roas,costConvCOP,campaigns:[],products:{},salesBySede:{},sedesConv:{},agents:{}});}
+  return result;
+}
+
+function _parseEnsiferaTabMeta(csv){
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<csv.length;i++){const c=csv[i];
+    if(q){if(c==='"'){if(csv[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+    else{if(c==='"')q=true;else if(c===','){row.push(f);f='';}else if(c==='\n'||c==='\r'){if(c==='\r'&&csv[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f='';}else f+=c;}}
+  if(f||row.length){row.push(f);rows.push(row);}
+  const pn=s=>{const v=(s||'').replace(/[\s$.]/g,'').replace(',','.');return v?parseFloat(v)||0:0;};
+  const productsAsked=[],productsSold=[];
+  let mode=null;
+  for(let r=0;r<rows.length;r++){
+    const lbl=((rows[r][0]||'').trim().replace(/\r$/,''));
+    const lblL=lbl.toLowerCase();
+    if(lblL==='productos')mode='asked';
+    else if(lblL==='productos vendidos')mode='sold';
+    else if(mode&&lbl&&lblL!=='producto'&&!lblL.includes('venta')&&!lblL.includes('total')&&!lblL.includes('pago')&&!lblL.includes('invers')){
+      const val=pn((rows[r][1]||'').trim());
+      if(val>0)(mode==='asked'?productsAsked:productsSold).push({name:lbl,v:val});
+    }
+  }
+  return{productsAsked,productsSold};
+}
+
+(async function(){
 "use strict";
+// Live-fetch current month(s) from Google Sheet to keep dashboard updated without rebuild
+try{
+  const _sid='1sxBiAsb0sUOLqYNr3H7l-VhN6DpN-Boh';
+  const _gids=[726448640]; // SEPTIEMBRE — update this list when a new month tab is added
+  const _txts=await Promise.all(_gids.map(g=>fetch(`https://docs.google.com/spreadsheets/d/${_sid}/export?format=csv&gid=${g}&t=${Date.now()}`).then(r=>r.ok?r.text():'').catch(()=>'')));
+  const _fresh=_txts.flatMap(_parseEnsiferaPivot);
+  if(_fresh.length){const _seen=new Set(_fresh.map(d=>d.date));DATA.days=[...(DATA.days||[]).filter(d=>!_seen.has(d.date)),..._fresh].sort((a,b)=>a.date.localeCompare(b.date));}
+  const _tabMeta=_parseEnsiferaTabMeta(_txts[0]||'');
+  if(_tabMeta.productsAsked.length)DATA.productsAsked=_tabMeta.productsAsked;
+  if(_tabMeta.productsSold.length)DATA.productsSold=_tabMeta.productsSold;
+}catch(e){}
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmtCOP=v=> v==null?"—":"$"+Math.round(v).toLocaleString("es-CO");
 const fmtCOPk=v=>{ if(v==null)return "—"; const a=Math.abs(v); if(a>=1e6)return "$"+(v/1e6).toFixed(1)+"M"; if(a>=1e3)return "$"+Math.round(v/1e3)+"k"; return "$"+Math.round(v);};
@@ -411,19 +480,62 @@ function renderCamps(){
     `</tbody><tfoot><tr><td>Total (${Object.keys(a.camps).length})</td><td class="tnum">${fmtCOP(tS)}</td><td class="tnum">${fmtN(tI)}</td><td class="tnum">${fmtN(tR)}</td><td></td></tr></tfoot>`;
 }
 
-// ---- meta account table ----
+// ---- meta account table (live monthly data) ----
 function renderMeta(){
   const el=$("#metaTbl");
-  const inr=(DATA.meta.daily||[]).filter(r=>r.date>=state.from&&r.date<=state.to);
-  let rows;
-  if(inr.length){const by={};inr.forEach(r=>{const o=by[r.camp]=by[r.camp]||{camp:r.camp,spend:0,impr:0,clicks:0};o.spend+=r.spend;o.impr+=r.impressions;o.clicks+=r.clicks;});rows=Object.values(by);}
-  else rows=(DATA.meta.campaignTotals||[]).map(c=>({camp:c.name,spend:c.spend,impr:c.impressions,clicks:c.clicks}));
-  rows.sort((a,b)=>b.spend-a.spend);
-  const pal=["var(--s1)","var(--s2)","var(--s3)","var(--s4)"];
-  let tS=0,tI=0,tC=0;rows.forEach(r=>{tS+=r.spend;tI+=r.impr;tC+=r.clicks;});
-  el.innerHTML=`<thead><tr><th>Campaña</th><th>Inversión</th><th>Impres.</th><th>Clics</th></tr></thead><tbody>`+
-    rows.map((r,i)=>`<tr><td class="name"><span class="dot" style="background:${pal[i%4]}"></span>${r.camp.replace(/^WPP\//,'')}</td><td class="tnum">${fmtCOP(r.spend)}</td><td class="tnum">${fmtN(r.impr)}</td><td class="tnum">${fmtN(r.clicks)}</td></tr>`).join("")+
-    `</tbody><tfoot><tr><td>Total</td><td class="tnum">${fmtCOP(tS)}</td><td class="tnum">${fmtN(tI)}</td><td class="tnum">${fmtN(tC)}</td></tr></tfoot>`;
+  const monthly=(DATA.meta&&DATA.meta.monthly)||[];
+  if(!monthly.length){el.innerHTML='<tbody><tr><td colspan="10" class="empty">Sin datos de Meta Ads</td></tr></tbody>';return;}
+  const stMo=state.from.substring(0,7),toMo=state.to.substring(0,7);
+  const matched=monthly.filter(m=>m.month>=stMo&&m.month<=toMo);
+  const src=matched.length?matched:monthly.slice(0,1);
+  const byName={};
+  src.forEach(md=>{
+    (md.campaigns||[]).filter(c=>c.spend>0).forEach(c=>{
+      const o=byName[c.name]=byName[c.name]||{name:c.name,status:c.status,spend:0,impressions:0,clicks:0,reach:0,results:0,resultType:c.resultType||''};
+      o.spend+=c.spend;o.impressions+=c.impressions;o.clicks+=c.clicks;o.reach+=c.reach;o.results+=c.results;
+    });
+  });
+  const rows=Object.values(byName).sort((a,b)=>b.spend-a.spend);
+  if(!rows.length){el.innerHTML='<tbody><tr><td colspan="10" class="empty">Sin inversión en el período</td></tr></tbody>';return;}
+  let tS=0,tI=0,tC=0,tR=0,tRe=0;
+  rows.forEach(r=>{tS+=r.spend;tI+=r.impressions;tC+=r.clicks;tR+=r.reach;tRe+=r.results;});
+  const pal=["var(--s1)","var(--s2)","var(--s3)","var(--s4)","var(--brand)","var(--amber-line)","var(--teal)"];
+  const badge=s=>s==='ACTIVE'?'<span class="pill on">Activa</span>':'<span class="pill off">Pausa</span>';
+  const pct=(a,b)=>b>0?(a/b*100).toFixed(2)+'%':'—';
+  const label=src.map(m=>m.label).join(' + ')+(matched.length?'':' (más reciente)');
+  const upd=DATA.meta&&DATA.meta.updatedAt?`· act. ${DATA.meta.updatedAt}`:'';
+  const el2=document.getElementById("metaUpdated");if(el2)el2.textContent=label+' '+upd;
+  el.innerHTML=`<thead><tr><th>Estado</th><th>Campaña</th><th>Inversión</th><th>Alcance</th><th>Impres.</th><th>Clics</th><th>CTR</th><th>Resultados</th><th>Costo/Res.</th><th>CPC</th></tr></thead><tbody>`+
+    rows.map((r,i)=>`<tr>
+      <td style="white-space:nowrap">${badge(r.status)}</td>
+      <td class="name"><span class="dot" style="background:${pal[i%pal.length]}"></span>${r.name.replace(/^WPP\//,'')}</td>
+      <td class="tnum">${fmtCOP(r.spend)}</td>
+      <td class="tnum">${fmtN(r.reach)}</td>
+      <td class="tnum">${fmtN(r.impressions)}</td>
+      <td class="tnum">${fmtN(r.clicks)}</td>
+      <td class="tnum">${pct(r.clicks,r.impressions)}</td>
+      <td class="tnum">${r.results?fmtN(r.results)+'<span style="color:var(--muted);font-size:10px;margin-left:4px">'+r.resultType+'</span>':'—'}</td>
+      <td class="tnum">${r.results?fmtCOP(r.spend/r.results):'—'}</td>
+      <td class="tnum">${r.clicks?fmtCOP(r.spend/r.clicks):'—'}</td>
+    </tr>`).join('')+
+    `</tbody><tfoot><tr><td></td><td>Total · ${rows.length} campañas</td><td class="tnum">${fmtCOP(tS)}</td><td class="tnum">${fmtN(tR)}</td><td class="tnum">${fmtN(tI)}</td><td class="tnum">${fmtN(tC)}</td><td class="tnum">${pct(tC,tI)}</td><td class="tnum">${fmtN(tRe)}</td><td class="tnum">${tRe?fmtCOP(tS/tRe):'—'}</td><td class="tnum">${tC?fmtCOP(tS/tC):'—'}</td></tr></tfoot>`;
+}
+
+// ---- products (live from sheet tab meta) ----
+function renderProducts(){
+  const asked=DATA.productsAsked||[];
+  const sold=DATA.productsSold||[];
+  const a=agg(state.from,state.to);
+  if(asked.length){
+    barList($("#prodList"),asked.map(p=>[p.name,p.v]),{colors:["var(--brand)","var(--s1)","var(--s2)","var(--s4)","var(--teal)"],limit:8});
+  } else {
+    barList($("#prodList"),Object.entries(a.prods),{colors:["var(--brand)"],limit:8});
+  }
+  if(sold.length){
+    barList($("#prodSoldList"),sold.map(p=>[p.name,p.v]),{colors:["var(--amber-line)","var(--s3)","var(--teal)"],limit:8});
+  } else {
+    $("#prodSoldList").innerHTML='<div class="empty">Sin datos este mes</div>';
+  }
 }
 
 // ---- reconciliation ----
@@ -451,7 +563,7 @@ function renderAll(){
   $("#rangeNote").innerHTML=`Mostrando <b style="color:var(--ink-2)">${long(state.from)}</b> → <b style="color:var(--ink-2)">${long(state.to)}</b> · ${daySpan(state.from,state.to)} días`+(state.compare?` · comparando con el periodo previo de igual duración`:``);
   $$("#presets .chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.f===state.from&&c.dataset.t===state.to?"true":"false"));
   const a=agg(state.from,state.to);
-  kpiCards(); renderCharts(); renderCamps(); renderMeta(); renderRecon();
+  kpiCards(); renderCharts(); renderCamps(); renderMeta(); renderRecon(); renderProducts();
   // ventas por sede list (+ sin desglose)
   const sedeEntries=SEDE_ORDER.map(k=>[k,a.sedeSales[k]||0]);
   const sedeSum=sedeEntries.reduce((s,e)=>s+e[1],0);
@@ -460,7 +572,6 @@ function renderAll(){
   if(noBreak>0)list.push(["Sin desglose (jun–jul)",noBreak]);
   barList($("#sedeSalesList"),list,{money:true,colorMap:Object.assign({},SEDE_COLOR,{"Sin desglose (jun–jul)":"var(--muted)"}),limit:6});
   barList($("#sedesConvList"),Object.entries(a.sedeConv),{colorMap:{"Ensifera Cali":"var(--s1)","Ensifera Medellín":"var(--s2)","Ensifera Bogotá":"var(--s4)"},colors:["var(--s1)","var(--s2)","var(--s4)","var(--s3)"]});
-  barList($("#prodList"),Object.entries(a.prods),{colors:["var(--brand)"],limit:8});
 }
 
 const _mesActual=(()=>{const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-01`;})();

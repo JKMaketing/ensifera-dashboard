@@ -261,20 +261,23 @@ function _parseEnsiferaTabMeta(csv){
     else{if(ch==='"')q=true;else if(ch===','){row.push(f);f='';}else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&csv[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f='';}else f+=ch;}}
   if(f||row.length){row.push(f);rows.push(row);}
   const pn=s=>{const v=(s||'').replace(/[\s$,.]/g,'');return v?parseFloat(v)||0:0;};
-  const productsAsked=[],productsSold=[];
+  const askedMap={},soldMap={};
   let mode=null;
+  const badLabel=s=>{const l=s.toLowerCase();return l.includes('nombre')||l.includes('conv')||l.includes('roas')||l.includes('ticket')||l.includes('costo')||l.includes('pago')||l.includes('venta')||l.includes('invers')||l.includes('total')||s.includes('/');};
   for(let r=0;r<rows.length;r++){
     const lbl=((rows[r][0]||'').trim().replace(/\r$/,''));
     const lblL=lbl.toLowerCase();
-    if(lblL==='productos')mode='asked';
-    else if(lblL==='productos vendidos')mode='sold';
-    else if(!lbl||lbl===lbl.toUpperCase()){mode=null;}
-    else if(mode&&lblL!=='producto'&&!lblL.includes('nombre')&&!lblL.includes('venta')&&!lblL.includes('total')&&!lblL.includes('pago')&&!lblL.includes('invers')&&!lblL.includes('conv')&&!lblL.includes('roas')&&!lblL.includes('ticket')&&!lblL.includes('costo')&&!lbl.includes('/')){
+    if(lblL==='productos'){mode='asked';}
+    else if(lblL==='productos vendidos'){mode='sold';}
+    else if(!lbl){mode=null;}
+    else if(lbl===lbl.toUpperCase()&&lbl.length>1){mode=null;}
+    else if(mode&&lblL!=='producto'&&!badLabel(lbl)){
       const val=pn((rows[r][1]||'').trim());
-      if(val>0&&val<5000)(mode==='asked'?productsAsked:productsSold).push({name:lbl,v:val});
+      if(val>0&&val<2000){const m=mode==='asked'?askedMap:soldMap;m[lbl]=(m[lbl]||0)+val;}
     }
   }
-  return{productsAsked,productsSold};
+  const toArr=m=>Object.entries(m).map(([name,v])=>({name,v})).sort((a,b)=>b.v-a.v);
+  return{productsAsked:toArr(askedMap),productsSold:toArr(soldMap)};
 }
 
 (async function(){

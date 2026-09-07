@@ -268,9 +268,10 @@ function _parseEnsiferaTabMeta(csv){
     const lblL=lbl.toLowerCase();
     if(lblL==='productos')mode='asked';
     else if(lblL==='productos vendidos')mode='sold';
-    else if(mode&&lbl&&lblL!=='producto'&&!lblL.includes('venta')&&!lblL.includes('total')&&!lblL.includes('pago')&&!lblL.includes('invers')){
+    else if(!lbl||lbl===lbl.toUpperCase()){mode=null;}
+    else if(mode&&lblL!=='producto'&&!lblL.includes('nombre')&&!lblL.includes('venta')&&!lblL.includes('total')&&!lblL.includes('pago')&&!lblL.includes('invers')&&!lblL.includes('conv')&&!lblL.includes('roas')&&!lblL.includes('ticket')&&!lblL.includes('costo')&&!lbl.includes('/')){
       const val=pn((rows[r][1]||'').trim());
-      if(val>0)(mode==='asked'?productsAsked:productsSold).push({name:lbl,v:val});
+      if(val>0&&val<5000)(mode==='asked'?productsAsked:productsSold).push({name:lbl,v:val});
     }
   }
   return{productsAsked,productsSold};

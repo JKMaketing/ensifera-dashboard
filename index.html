@@ -292,7 +292,32 @@ try{
   if(_tabMeta.productsAsked.length)DATA.productsAsked=_tabMeta.productsAsked;
   if(_tabMeta.productsSold.length)DATA.productsSold=_tabMeta.productsSold;
 }catch(e){}
-try{const _mr=await fetch('./data/meta.json?t='+Date.now());if(_mr.ok){const _md=await _mr.json();if(_md&&_md.monthly){DATA.meta=_md;}}}catch(e){}
+// ── Meta Ads: live client-side fetch (primary) → data/meta.json (fallback) ──
+try{
+  // Token from URL hash (#token=XXX) or localStorage
+  let _tok=localStorage.getItem('metaAdsToken')||'';
+  const _hp=new URLSearchParams((location.hash||'').slice(1));
+  if(_hp.get('token')){_tok=_hp.get('token');localStorage.setItem('metaAdsToken',_tok);history.replaceState(null,'',location.pathname+location.search);}
+  if(_tok){
+    const _pCOP=s=>parseInt((s+'').replace(/[^0-9]/g,''),10)||0;
+    const _pRes=o=>{if(!o||!o.values)return 0;return parseInt(((o.values[0])||{}).value||'0',10)||0;};
+    const _rType=o=>{const i=(o&&o.indicator)||'';return i.includes('messaging_conversation_started')?'Conv. WPP':i.includes('profile_visit')?'Visitas perfil':i.includes('purchase')?'Compra web':'Resultados';};
+    const _mapC=d=>(d.data||[]).map(c=>({name:c.name,status:c.status,spend:_pCOP(c.amount_spent),impressions:parseInt(c.impressions||0),clicks:parseInt(c.clicks||0),reach:parseInt(c.reach||0),results:_pRes(c.results),resultType:_rType(c.results),costPerResult:_pCOP((c.cost_per_result||{}).value),ctr:parseFloat((c.ctr||'0').replace(',','.'))||0})).filter(c=>c.spend>0);
+    const _mns=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const _mKey=d=>d.toISOString().slice(0,7);
+    const _mLbl=d=>`${_mns[d.getMonth()]} ${d.getFullYear()}`;
+    const _flds='name,status,amount_spent,impressions,clicks,reach,results,cost_per_result,ctr';
+    const _base=`https://graph.facebook.com/v21.0/act_1580457616921076/campaigns?fields=${encodeURIComponent(_flds)}&access_token=${_tok}`;
+    const [_r0,_r1]=await Promise.all([fetch(_base+'&date_preset=this_month').then(r=>r.json()),fetch(_base+'&date_preset=last_month').then(r=>r.json())]);
+    if(_r0.error&&_r0.error.code===190){localStorage.removeItem('metaAdsToken');}
+    else if(!_r0.error){
+      const _now=new Date(),_lm=new Date(_now.getFullYear(),_now.getMonth()-1,1);
+      DATA.meta={monthly:[{month:_mKey(_now),label:_mLbl(_now),campaigns:_mapC(_r0)},{month:_mKey(_lm),label:_mLbl(_lm),campaigns:_mapC(_r1||{data:[]})}].filter(m=>m.campaigns.length),updatedAt:_now.toISOString().slice(0,10)};
+    }
+  }
+}catch(e){}
+// Fallback: data/meta.json (committed to repo, updated by scheduled task / GitHub Actions)
+if(!DATA.meta||!DATA.meta.monthly){try{const _mr=await fetch('./data/meta.json?t='+Date.now());if(_mr.ok){const _md=await _mr.json();if(_md&&_md.monthly){DATA.meta=_md;}}}catch(e){}}
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmtCOP=v=> v==null?"—":"$"+Math.round(v).toLocaleString("es-CO");

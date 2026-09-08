@@ -1,0 +1,40 @@
+name: Update Meta Ads Data
+
+on:
+  schedule:
+    # 10:00 AM Colombia (UTC-5) = 15:00 UTC — runs every day
+    - cron: '0 15 * * *'
+  workflow_dispatch:   # allow manual trigger from GitHub Actions UI
+
+permissions:
+  contents: write
+
+jobs:
+  update-meta:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch Meta Ads campaign data
+        run: node scripts/fetch-meta.js
+        env:
+          FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
+          AD_ACCOUNT_ID: '1580457616921076'
+
+      - name: Commit and push data/meta.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/meta.json
+          if git diff --staged --quiet; then
+            echo "No changes to meta.json — already up to date."
+          else
+            git commit -m "chore: update Meta Ads data $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi

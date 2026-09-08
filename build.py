@@ -419,10 +419,17 @@ def main():
 
     with open(os.path.join(HERE, "meta.json"), encoding="utf-8") as f:
         meta = json.load(f)
+    data_meta_path = os.path.join(HERE, "data", "meta.json")
+    data_meta = {}
+    if os.path.exists(data_meta_path):
+        with open(data_meta_path, encoding="utf-8") as f:
+            data_meta = json.load(f)
     combined = {"usdCop": USDCOP, "days": days, "meta": {
         "account": meta.get("account"), "accountId": meta.get("accountId"),
         "currency": meta.get("currency"), "period": meta.get("period"),
-        "campaignTotals": meta.get("campaignTotals", []), "daily": meta.get("daily", [])}}
+        "campaignTotals": meta.get("campaignTotals", []), "daily": meta.get("daily", []),
+        "monthly": data_meta.get("monthly", []),
+        "updatedAt": data_meta.get("updatedAt")}}
     data_json = json.dumps(combined, ensure_ascii=False, separators=(",", ":"))
 
     with open(os.path.join(HERE, "template.html"), encoding="utf-8") as f:

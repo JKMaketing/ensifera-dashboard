@@ -1,1 +1,65 @@
-{"days":[{"date":"2026-08-01","spendCOP":87771,"impressions":18693,"resultsAds":0},{"date":"2026-08-02","spendCOP":100606,"impressions":17020,"resultsAds":0},{"date":"2026-08-03","spendCOP":91903,"impressions":15717,"resultsAds":0},{"date":"2026-08-04","spendCOP":87316,"impressions":15164,"resultsAds":0},{"date":"2026-08-05","spendCOP":63210,"impressions":14740,"resultsAds":0},{"date":"2026-08-06","spendCOP":91156,"impressions":16668,"resultsAds":0},{"date":"2026-08-07","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-08","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-09","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-10","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-11","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-12","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-13","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-14","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-15","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-16","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-17","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-18","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-19","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-20","spendCOP":50630,"impressions":8428,"resultsAds":0},{"date":"2026-08-21","spendCOP":61288,"impressions":11613,"resultsAds":0},{"date":"2026-08-22","spendCOP":28303,"impressions":5082,"resultsAds":0},{"date":"2026-08-23","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-24","spendCOP":65685,"impressions":12522,"resultsAds":0},{"date":"2026-08-25","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-26","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-27","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-28","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-29","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-30","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-08-31","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-09-01","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-09-02","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-09-03","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-09-04","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-09-05","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-09-06","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-09-07","spendCOP":0,"impressions":0,"resultsAds":0},{"date":"2026-09-08","spendCOP":0,"impressions":0,"resultsAds":0}]}
+{
+  "generated": "2026-09-08",
+  "days": [
+    {
+      "date": "2026-08-01",
+      "spendCOP": 87771,
+      "impressions": 18693,
+      "resultsAds": 51
+    },
+    {
+      "date": "2026-08-02",
+      "spendCOP": 100606,
+      "impressions": 17020,
+      "resultsAds": 54
+    },
+    {
+      "date": "2026-08-03",
+      "spendCOP": 91903,
+      "impressions": 15717,
+      "resultsAds": 37
+    },
+    {
+      "date": "2026-08-04",
+      "spendCOP": 87316,
+      "impressions": 15164,
+      "resultsAds": 31
+    },
+    {
+      "date": "2026-08-05",
+      "spendCOP": 63210,
+      "impressions": 14740,
+      "resultsAds": 17
+    },
+    {
+      "date": "2026-08-06",
+      "spendCOP": 91156,
+      "impressions": 16668,
+      "resultsAds": 37
+    },
+    {
+      "date": "2026-08-20",
+      "spendCOP": 50630,
+      "impressions": 8428,
+      "resultsAds": 29
+    },
+    {
+      "date": "2026-08-21",
+      "spendCOP": 61288,
+      "impressions": 11613,
+      "resultsAds": 31
+    },
+    {
+      "date": "2026-08-22",
+      "spendCOP": 28303,
+      "impressions": 5082,
+      "resultsAds": 13
+    },
+    {
+      "date": "2026-08-24",
+      "spendCOP": 65685,
+      "impressions": 12522,
+      "resultsAds": 24
+    }
+  ]
+}

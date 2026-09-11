@@ -105,45 +105,105 @@
     },
     {
       "date": "2026-08-25",
-      "spendCOP": 27878,
-      "impressions": 4996,
-      "resultsAds": 10
+      "spendCOP": 72544,
+      "impressions": 11879,
+      "resultsAds": 24
     },
     {
       "date": "2026-08-26",
-      "spendCOP": 6607,
-      "impressions": 1568,
+      "spendCOP": 6944,
+      "impressions": 1631,
       "resultsAds": 2
     },
     {
       "date": "2026-08-27",
-      "spendCOP": 52218,
-      "impressions": 11328,
-      "resultsAds": 24
+      "spendCOP": 121615,
+      "impressions": 24400,
+      "resultsAds": 52
     },
     {
       "date": "2026-08-28",
-      "spendCOP": 41946,
-      "impressions": 8914,
-      "resultsAds": 23
+      "spendCOP": 105923,
+      "impressions": 21811,
+      "resultsAds": 44
     },
     {
       "date": "2026-08-29",
-      "spendCOP": 27069,
-      "impressions": 4921,
-      "resultsAds": 14
+      "spendCOP": 55929,
+      "impressions": 9749,
+      "resultsAds": 31
     },
     {
       "date": "2026-08-31",
-      "spendCOP": 43623,
-      "impressions": 10768,
-      "resultsAds": 32
+      "spendCOP": 98819,
+      "impressions": 22653,
+      "resultsAds": 63
     },
     {
       "date": "2026-09-01",
-      "spendCOP": 44689,
-      "impressions": 12317,
-      "resultsAds": 13
+      "spendCOP": 103534,
+      "impressions": 26353,
+      "resultsAds": 36
+    },
+    {
+      "date": "2026-09-02",
+      "spendCOP": 90156,
+      "impressions": 24355,
+      "resultsAds": 41
+    },
+    {
+      "date": "2026-09-03",
+      "spendCOP": 93906,
+      "impressions": 25046,
+      "resultsAds": 52
+    },
+    {
+      "date": "2026-09-04",
+      "spendCOP": 108694,
+      "impressions": 35119,
+      "resultsAds": 43
+    },
+    {
+      "date": "2026-09-05",
+      "spendCOP": 68495,
+      "impressions": 16822,
+      "resultsAds": 85
+    },
+    {
+      "date": "2026-09-06",
+      "spendCOP": 21283,
+      "impressions": 6874,
+      "resultsAds": 164
+    },
+    {
+      "date": "2026-09-07",
+      "spendCOP": 156862,
+      "impressions": 42452,
+      "resultsAds": 267
+    },
+    {
+      "date": "2026-09-08",
+      "spendCOP": 130237,
+      "impressions": 28270,
+      "resultsAds": 240
+    },
+    {
+      "date": "2026-09-09",
+      "spendCOP": 127550,
+      "impressions": 28751,
+      "resultsAds": 235
+    },
+    {
+      "date": "2026-09-10",
+      "spendCOP": 145881,
+      "impressions": 37198,
+      "resultsAds": 304
+    },
+    {
+      "date": "2026-09-11",
+      "spendCOP": 18275,
+      "impressions": 3548,
+      "resultsAds": 67
     }
   ]
 }

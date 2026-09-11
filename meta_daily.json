@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-10",
+  "generated": "2026-09-11",
   "days": [
     {
       "date": "2026-08-01",
@@ -143,30 +143,6 @@
       "date": "2026-09-01",
       "spendCOP": 44689,
       "impressions": 12317,
-      "resultsAds": 13
-    },
-    {
-      "date": "2026-09-02",
-      "spendCOP": 36694,
-      "impressions": 10154,
-      "resultsAds": 17
-    },
-    {
-      "date": "2026-09-03",
-      "spendCOP": 40964,
-      "impressions": 10875,
-      "resultsAds": 22
-    },
-    {
-      "date": "2026-09-04",
-      "spendCOP": 50300,
-      "impressions": 16554,
-      "resultsAds": 28
-    },
-    {
-      "date": "2026-09-05",
-      "spendCOP": 32574,
-      "impressions": 7083,
       "resultsAds": 13
     }
   ]

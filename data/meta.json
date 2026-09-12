@@ -73,62 +73,74 @@
         {
           "name": "WPP/FNL/WRM",
           "status": "ACTIVE",
-          "spend": 40941,
-          "impressions": 12420,
-          "clicks": 231,
-          "reach": 9673,
-          "results": 28,
+          "spend": 44428,
+          "impressions": 13157,
+          "clicks": 240,
+          "reach": 10248,
+          "results": 29,
           "resultType": "Conv. WPP",
-          "costPerResult": 1462,
-          "ctr": 1.86
+          "costPerResult": 1532,
+          "ctr": 1.82
         },
         {
           "name": "WPP/FNL/SML",
           "status": "ACTIVE",
-          "spend": 54618,
-          "impressions": 12090,
-          "clicks": 241,
-          "reach": 9414,
-          "results": 29,
+          "spend": 61920,
+          "impressions": 13145,
+          "clicks": 257,
+          "reach": 10269,
+          "results": 33,
           "resultType": "Conv. WPP",
-          "costPerResult": 1883,
-          "ctr": 1.99
+          "costPerResult": 1876,
+          "ctr": 1.96
         },
         {
           "name": "WPP/FNL/SEG",
           "status": "ACTIVE",
-          "spend": 52327,
-          "impressions": 12000,
-          "clicks": 190,
-          "reach": 9665,
-          "results": 24,
+          "spend": 60150,
+          "impressions": 13439,
+          "clicks": 204,
+          "reach": 10824,
+          "results": 26,
           "resultType": "Conv. WPP",
-          "costPerResult": 2180,
-          "ctr": 1.58
+          "costPerResult": 2313,
+          "ctr": 1.52
         },
         {
           "name": "PRF/ENS+MCM",
           "status": "ACTIVE",
-          "spend": 118399,
-          "impressions": 40148,
-          "clicks": 1679,
-          "reach": 26429,
-          "results": 1141,
+          "spend": 121273,
+          "impressions": 41169,
+          "clicks": 1725,
+          "reach": 27001,
+          "results": 1181,
           "resultType": "Visitas perfil",
-          "costPerResult": 104,
-          "ctr": 4.18
+          "costPerResult": 103,
+          "ctr": 4.19
         },
         {
           "name": "WPP/ENS/EDIT/ADV/HR",
           "status": "ACTIVE",
-          "spend": 424033,
-          "impressions": 107491,
-          "clicks": 1159,
-          "reach": 77286,
-          "results": 172,
+          "spend": 449903,
+          "impressions": 111516,
+          "clicks": 1202,
+          "reach": 79680,
+          "results": 181,
           "resultType": "Conv. WPP",
-          "costPerResult": 2465,
+          "costPerResult": 2486,
           "ctr": 1.08
+        },
+        {
+          "name": "WPP/PROMO/EDIT",
+          "status": "PAUSED",
+          "spend": 7176,
+          "impressions": 902,
+          "clicks": 10,
+          "reach": 840,
+          "results": 2,
+          "resultType": "Conv. WPP",
+          "costPerResult": 3588,
+          "ctr": 1.11
         },
         {
           "name": "WPP/ENS/EDIT/HR",
@@ -145,5 +157,5 @@
       ]
     }
   ],
-  "updatedAt": "2026-09-11"
+  "updatedAt": "2026-09-12"
 }

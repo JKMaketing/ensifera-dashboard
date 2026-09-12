@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-11",
+  "generated": "2026-09-12",
   "days": [
     {
       "date": "2026-08-01",
@@ -195,15 +195,15 @@
     },
     {
       "date": "2026-09-10",
-      "spendCOP": 145881,
-      "impressions": 37198,
+      "spendCOP": 145970,
+      "impressions": 37216,
       "resultsAds": 304
     },
     {
       "date": "2026-09-11",
-      "spendCOP": 18275,
-      "impressions": 3548,
-      "resultsAds": 67
+      "spendCOP": 72376,
+      "impressions": 12656,
+      "resultsAds": 122
     }
   ]
 }

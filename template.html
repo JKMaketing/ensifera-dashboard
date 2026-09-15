@@ -374,6 +374,7 @@ function kpiCards(){
     {k:"Inversión (ads)",dot:"var(--amber-line)",v:fmtCOP(a.spend),sec:a.spendN+" días activos",cur:a.spend,prev:prev?prev.spend:null,better:"down"},
     {k:"ROAS",dot:"var(--teal)",v:fmtX(a.roas),sec:"retorno por peso invertido",cur:a.roas,prev:prev?prev.roas:null,better:"up"},
     {k:"Visitas al Perfil",dot:"var(--s1)",v:fmtN(a.visitas),sec:a.costoVisita!=null?fmtCOP(a.costoVisita)+" / visita":"",cur:a.visitas,prev:prev?prev.visitas:null,better:"up"},
+    {k:"Costo x Visita",dot:"var(--s1)",v:a.costoVisita!=null?fmtCOP(a.costoVisita):"—",sec:"costo promedio por visita al perfil",cur:a.costoVisita,prev:prev?prev.costoVisita:null,better:"down"},
     {k:"Conv. Iniciadas WPP",dot:"var(--s2)",v:fmtN(a.convWPP),sec:a.costoConvWPP!=null?fmtCOP(a.costoConvWPP)+" / conv.":"",cur:a.convWPP,prev:prev?prev.convWPP:null,better:"up"},
     {k:"Impresiones",dot:"var(--s3)",v:fmtN(a.impr),sec:"alcance de los anuncios",cur:a.impr,prev:prev?prev.impr:null,better:"up"},
   ];
@@ -505,7 +506,7 @@ function renderMeta(){
   const src=matched.length?matched:monthly.slice(0,1);
   const byName={};
   src.forEach(md=>{
-    (md.campaigns||[]).filter(c=>c.spend>0).forEach(c=>{
+    (md.campaigns||[]).filter(c=>c.results>0||c.impressions>0).forEach(c=>{
       const o=byName[c.name]=byName[c.name]||{name:c.name,status:c.status,spend:0,impressions:0,clicks:0,reach:0,results:0,resultType:c.resultType||''};
       o.spend+=c.spend;o.impressions+=c.impressions;o.clicks+=c.clicks;o.reach+=c.reach;o.results+=c.results;
     });

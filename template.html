@@ -346,7 +346,14 @@ function agg(f,t){
     d.campaigns.forEach(c=>{const o=camps[c.name]=camps[c.name]||{name:c.name,spendCOP:0,impressions:0,results:0};
       if(c.spendCOP)o.spendCOP+=c.spendCOP; if(c.impressions)o.impressions+=c.impressions; if(c.results)o.results+=c.results;});
   });
-  return {sel,spend,spendN,sales,salesN,conv,impr,roas:spend>0?sales/spend:null,cpc:conv>0?spend/conv:null,sedeSales,sedeConv,prods,camps};
+  // Impresiones: usar sumatoria de campañas Meta COP con impressions>0 para los meses del periodo
+  const _stMo=f.substring(0,7),_toMo=t.substring(0,7);
+  const _monthly=(DATA.meta&&DATA.meta.monthly)||[];
+  const _matched=_monthly.filter(m=>m.month>=_stMo&&m.month<=_toMo);
+  let metaImpr=0;
+  _matched.forEach(md=>{(md.campaigns||[]).filter(c=>c.impressions>0).forEach(c=>{metaImpr+=c.impressions;});});
+  const imprFinal=metaImpr>0?metaImpr:impr;
+  return {sel,spend,spendN,sales,salesN,conv,impr:imprFinal,roas:spend>0?sales/spend:null,cpc:conv>0?spend/conv:null,sedeSales,sedeConv,prods,camps};
 }
 
 // ---- KPIs ----

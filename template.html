@@ -353,7 +353,15 @@ function agg(f,t){
   let metaImpr=0;
   _matched.forEach(md=>{(md.campaigns||[]).filter(c=>c.impressions>0).forEach(c=>{metaImpr+=c.impressions;});});
   const imprFinal=metaImpr>0?metaImpr:impr;
-  return {sel,spend,spendN,sales,salesN,conv,impr:imprFinal,roas:spend>0?sales/spend:null,cpc:conv>0?spend/conv:null,sedeSales,sedeConv,prods,camps};
+  // Visitas al perfil y Conv. WPP: desglose por resultType desde META mensual
+  let visitas=0,spendPRF=0,convWPP=0,spendWPP=0;
+  _matched.forEach(md=>{(md.campaigns||[]).forEach(c=>{
+    if(c.resultType==='Visitas perfil'){visitas+=c.results||0;spendPRF+=c.spend||0;}
+    else if(c.resultType==='Conv. WPP'){convWPP+=c.results||0;spendWPP+=c.spend||0;}
+  });});
+  const costoVisita=visitas>0?Math.round(spendPRF/visitas):null;
+  const costoConvWPP=convWPP>0?Math.round(spendWPP/convWPP):null;
+  return {sel,spend,spendN,sales,salesN,conv,impr:imprFinal,visitas,costoVisita,convWPP,costoConvWPP,roas:spend>0?sales/spend:null,cpc:conv>0?spend/conv:null,sedeSales,sedeConv,prods,camps};
 }
 
 // ---- KPIs ----
@@ -365,8 +373,8 @@ function kpiCards(){
     {k:"Ventas totales",dot:"var(--brand)",v:fmtCOP(a.sales),sec:a.salesN+" días con ventas",cur:a.sales,prev:prev?prev.sales:null,better:"up"},
     {k:"Inversión (ads)",dot:"var(--amber-line)",v:fmtCOP(a.spend),sec:a.spendN+" días activos",cur:a.spend,prev:prev?prev.spend:null,better:"down"},
     {k:"ROAS",dot:"var(--teal)",v:fmtX(a.roas),sec:"retorno por peso invertido",cur:a.roas,prev:prev?prev.roas:null,better:"up"},
-    {k:"Conversaciones",dot:"var(--s1)",v:fmtN(a.conv),sec:(a.cpc!=null?fmtCOP(a.cpc)+" c/u":""),cur:a.conv,prev:prev?prev.conv:null,better:"up"},
-    {k:"Costo / conversación",dot:"var(--s2)",v:fmtCOP(a.cpc),sec:"inversión ÷ conversaciones",cur:a.cpc,prev:prev?prev.cpc:null,better:"down"},
+    {k:"Visitas al Perfil",dot:"var(--s1)",v:fmtN(a.visitas),sec:a.costoVisita!=null?fmtCOP(a.costoVisita)+" / visita":"",cur:a.visitas,prev:prev?prev.visitas:null,better:"up"},
+    {k:"Conv. Iniciadas WPP",dot:"var(--s2)",v:fmtN(a.convWPP),sec:a.costoConvWPP!=null?fmtCOP(a.costoConvWPP)+" / conv.":"",cur:a.convWPP,prev:prev?prev.convWPP:null,better:"up"},
     {k:"Impresiones",dot:"var(--s3)",v:fmtN(a.impr),sec:"alcance de los anuncios",cur:a.impr,prev:prev?prev.impr:null,better:"up"},
   ];
   $("#kpis").innerHTML=cards.map(c=>{

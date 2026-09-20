@@ -7,14 +7,14 @@
         {
           "name": "PRF/ENS+MCM",
           "status": "ACTIVE",
-          "spend": 200528,
-          "impressions": 80903,
-          "clicks": 3196,
-          "reach": 51703,
-          "results": 2044,
+          "spend": 208995,
+          "impressions": 85078,
+          "clicks": 3312,
+          "reach": 54380,
+          "results": 2095,
           "resultType": "Visitas perfil",
-          "costPerResult": 98,
-          "ctr": 3.95
+          "costPerResult": 100,
+          "ctr": 3.89
         },
         {
           "name": "WPP/PROMO/EDIT",
@@ -157,5 +157,5 @@
       ]
     }
   ],
-  "updatedAt": "2026-09-19"
+  "updatedAt": "2026-09-20"
 }

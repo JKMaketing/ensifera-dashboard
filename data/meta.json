@@ -1,185 +1,209 @@
 {
-  "monthly": [
-    {
-      "month": "2026-09",
-      "label": "Sep 2026",
-      "campaigns": [
-        {
-          "name": "WPP/ENS/EDIT/ADV/HR/#SERGIO",
-          "status": "ACTIVE",
-          "spend": 58074,
-          "impressions": 10779,
-          "clicks": 106,
-          "reach": 8865,
-          "results": 25,
-          "resultType": "Conv. WPP",
-          "costPerResult": 2323,
-          "ctr": 0.98
-        },
-        {
-          "name": "WPP/ENS/EDIT/HR/#SERGIO",
-          "status": "ACTIVE",
-          "spend": 47432,
-          "impressions": 10040,
-          "clicks": 116,
-          "reach": 8597,
-          "results": 14,
-          "resultType": "Conv. WPP",
-          "costPerResult": 3388,
-          "ctr": 1.16
-        },
-        {
-          "name": "PRF/ENS+MCM",
-          "status": "ACTIVE",
-          "spend": 230006,
-          "impressions": 94560,
-          "clicks": 3583,
-          "reach": 59623,
-          "results": 2240,
-          "resultType": "Visitas perfil",
-          "costPerResult": 103,
-          "ctr": 3.79
-        },
-        {
-          "name": "WPP/PROMO/EDIT",
-          "status": "PAUSED",
-          "spend": 7176,
-          "impressions": 902,
-          "clicks": 10,
-          "reach": 840,
-          "results": 2,
-          "resultType": "Conv. WPP",
-          "costPerResult": 3588,
-          "ctr": 1.11
-        },
-        {
-          "name": "WPP/FNL/WRM",
-          "status": "PAUSED",
-          "spend": 94039,
-          "impressions": 20216,
-          "clicks": 287,
-          "reach": 15941,
-          "results": 36,
-          "resultType": "Conv. WPP",
-          "costPerResult": 2612,
-          "ctr": 1.42
-        },
-        {
-          "name": "WPP/FNL/SML",
-          "status": "PAUSED",
-          "spend": 110219,
-          "impressions": 18443,
-          "clicks": 309,
-          "reach": 14305,
-          "results": 45,
-          "resultType": "Conv. WPP",
-          "costPerResult": 2449,
-          "ctr": 1.68
-        },
-        {
-          "name": "WPP/FNL/SEG",
-          "status": "PAUSED",
-          "spend": 109609,
-          "impressions": 20006,
-          "clicks": 262,
-          "reach": 15736,
-          "results": 34,
-          "resultType": "Conv. WPP",
-          "costPerResult": 3224,
-          "ctr": 1.31
-        },
-        {
-          "name": "WPP/ENS/EDIT/HR",
-          "status": "PAUSED",
-          "spend": 455681,
-          "impressions": 104115,
-          "clicks": 1038,
-          "reach": 74340,
-          "results": 168,
-          "resultType": "Conv. WPP",
-          "costPerResult": 2712,
-          "ctr": 1.0
-        },
-        {
-          "name": "WPP/ENS/EDIT/ADV/HR",
-          "status": "PAUSED",
-          "spend": 661062,
-          "impressions": 149206,
-          "clicks": 1701,
-          "reach": 98463,
-          "results": 253,
-          "resultType": "Conv. WPP",
-          "costPerResult": 2613,
-          "ctr": 1.14
-        }
-      ]
-    },
-    {
-      "month": "2026-08",
-      "label": "Ago 2026",
-      "campaigns": [
-        {
-          "name": "WPP/ENS/EDIT/HR",
-          "status": "PAUSED",
-          "spend": 262433,
-          "impressions": 49628,
-          "clicks": 631,
-          "reach": 35295,
-          "results": 111,
-          "resultType": "Conv. WPP",
-          "costPerResult": 2364,
-          "ctr": 1.27
-        },
-        {
-          "name": "WPP/ENS/EDIT/ADV/HR",
-          "status": "PAUSED",
-          "spend": 199341,
-          "impressions": 42495,
-          "clicks": 658,
-          "reach": 32126,
-          "results": 104,
-          "resultType": "Conv. WPP",
-          "costPerResult": 1917,
-          "ctr": 1.55
-        },
-        {
-          "name": "VTS/WEB",
-          "status": "PAUSED",
-          "spend": 180601,
-          "impressions": 31833,
-          "clicks": 404,
-          "reach": 12972,
-          "results": 1,
-          "resultType": "Compra web",
-          "costPerResult": 180601,
-          "ctr": 1.27
-        },
-        {
-          "name": "WPP/ENS/EDIT/ADV",
-          "status": "PAUSED",
-          "spend": 79097,
-          "impressions": 12965,
-          "clicks": 162,
-          "reach": 9700,
-          "results": 40,
-          "resultType": "Conv. WPP",
-          "costPerResult": 1977,
-          "ctr": 1.25
-        },
-        {
-          "name": "WPP/ENS/EDIT",
-          "status": "PAUSED",
-          "spend": 648771,
-          "impressions": 122682,
-          "clicks": 1484,
-          "reach": 63416,
-          "results": 286,
-          "resultType": "Conv. WPP",
-          "costPerResult": 2268,
-          "ctr": 1.21
-        }
-      ]
-    }
-  ],
-  "updatedAt": "2026-09-22"
+    "monthly":  [
+                    {
+                        "month":  "2026-08",
+                        "label":  "Ago 2026",
+                        "campaigns":  [
+                                          {
+                                              "name":  "WPP/ENS/EDIT/HR",
+                                              "status":  "PAUSED",
+                                              "spend":  262433,
+                                              "impressions":  49628,
+                                              "clicks":  631,
+                                              "reach":  35295,
+                                              "results":  111,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  2364,
+                                              "ctr":  1.27
+                                          },
+                                          {
+                                              "name":  "WPP/ENS/EDIT/ADV/HR",
+                                              "status":  "PAUSED",
+                                              "spend":  199341,
+                                              "impressions":  42495,
+                                              "clicks":  658,
+                                              "reach":  32126,
+                                              "results":  104,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  1917,
+                                              "ctr":  1.55
+                                          },
+                                          {
+                                              "name":  "VTS/WEB",
+                                              "status":  "PAUSED",
+                                              "spend":  180601,
+                                              "impressions":  31833,
+                                              "clicks":  404,
+                                              "reach":  12972,
+                                              "results":  1,
+                                              "resultType":  "Compra web",
+                                              "costPerResult":  180601,
+                                              "ctr":  1.27
+                                          },
+                                          {
+                                              "name":  "WPP/ENS/EDIT/ADV",
+                                              "status":  "PAUSED",
+                                              "spend":  79097,
+                                              "impressions":  12965,
+                                              "clicks":  162,
+                                              "reach":  9700,
+                                              "results":  40,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  1977,
+                                              "ctr":  1.25
+                                          },
+                                          {
+                                              "name":  "WPP/ENS/EDIT",
+                                              "status":  "PAUSED",
+                                              "spend":  648771,
+                                              "impressions":  122682,
+                                              "clicks":  1484,
+                                              "reach":  63416,
+                                              "results":  286,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  2268,
+                                              "ctr":  1.21
+                                          }
+                                      ]
+                    },
+                    {
+                        "month":  "2026-09",
+                        "label":  "Sep 2026",
+                        "campaigns":  [
+                                          {
+                                              "name":  "WPP/ENS/EDIT/ADV/HR/SEP",
+                                              "status":  "ACTIVE",
+                                              "spend":  1873,
+                                              "impressions":  490,
+                                              "clicks":  12,
+                                              "reach":  365,
+                                              "results":  0,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  0,
+                                              "ctr":  2.45
+                                          },
+                                          {
+                                              "name":  "PRF/ENS+MCM",
+                                              "status":  "ACTIVE",
+                                              "spend":  232382,
+                                              "impressions":  95558,
+                                              "clicks":  3613,
+                                              "reach":  60132,
+                                              "results":  2255,
+                                              "resultType":  "Visitas perfil",
+                                              "costPerResult":  103,
+                                              "ctr":  3.78
+                                          },
+                                          {
+                                              "name":  "WPP/ENS/EDIT/ADV/HR/#SERGIO",
+                                              "status":  "PAUSED",
+                                              "spend":  78364,
+                                              "impressions":  14917,
+                                              "clicks":  136,
+                                              "reach":  12117,
+                                              "results":  33,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  2375,
+                                              "ctr":  0.91
+                                          },
+                                          {
+                                              "name":  "WPP/ENS/EDIT/HR/#SERGIO",
+                                              "status":  "PAUSED",
+                                              "spend":  48190,
+                                              "impressions":  10269,
+                                              "clicks":  119,
+                                              "reach":  8869,
+                                              "results":  16,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  3012,
+                                              "ctr":  1.16
+                                          },
+                                          {
+                                              "name":  "WPP/MMF/ESC",
+                                              "status":  "PAUSED",
+                                              "spend":  8528,
+                                              "impressions":  1867,
+                                              "clicks":  26,
+                                              "reach":  1867,
+                                              "results":  0,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  0,
+                                              "ctr":  1.39
+                                          },
+                                          {
+                                              "name":  "WPP/PROMO/EDIT",
+                                              "status":  "PAUSED",
+                                              "spend":  7176,
+                                              "impressions":  902,
+                                              "clicks":  10,
+                                              "reach":  840,
+                                              "results":  2,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  3588,
+                                              "ctr":  1.11
+                                          },
+                                          {
+                                              "name":  "WPP/FNL/WRM",
+                                              "status":  "PAUSED",
+                                              "spend":  94039,
+                                              "impressions":  20216,
+                                              "clicks":  287,
+                                              "reach":  15941,
+                                              "results":  36,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  2612,
+                                              "ctr":  1.42
+                                          },
+                                          {
+                                              "name":  "WPP/FNL/SML",
+                                              "status":  "PAUSED",
+                                              "spend":  110219,
+                                              "impressions":  18443,
+                                              "clicks":  309,
+                                              "reach":  14305,
+                                              "results":  45,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  2449,
+                                              "ctr":  1.68
+                                          },
+                                          {
+                                              "name":  "WPP/FNL/SEG",
+                                              "status":  "PAUSED",
+                                              "spend":  109609,
+                                              "impressions":  20006,
+                                              "clicks":  262,
+                                              "reach":  15736,
+                                              "results":  34,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  3224,
+                                              "ctr":  1.31
+                                          },
+                                          {
+                                              "name":  "WPP/ENS/EDIT/HR",
+                                              "status":  "PAUSED",
+                                              "spend":  455695,
+                                              "impressions":  104118,
+                                              "clicks":  1038,
+                                              "reach":  74340,
+                                              "results":  168,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  2712,
+                                              "ctr":  1
+                                          },
+                                          {
+                                              "name":  "WPP/ENS/EDIT/ADV/HR",
+                                              "status":  "PAUSED",
+                                              "spend":  661062,
+                                              "impressions":  149206,
+                                              "clicks":  1701,
+                                              "reach":  98463,
+                                              "results":  253,
+                                              "resultType":  "Conv. WPP",
+                                              "costPerResult":  2613,
+                                              "ctr":  1.14
+                                          }
+                                      ]
+                    }
+                ],
+    "updatedAt":  "2026-09-22"
 }

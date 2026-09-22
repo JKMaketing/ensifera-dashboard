@@ -7,38 +7,38 @@
         {
           "name": "WPP/ENS/EDIT/ADV/HR/#SERGIO",
           "status": "ACTIVE",
-          "spend": 5530,
-          "impressions": 712,
-          "clicks": 3,
-          "reach": 550,
-          "results": 1,
+          "spend": 58074,
+          "impressions": 10779,
+          "clicks": 106,
+          "reach": 8865,
+          "results": 25,
           "resultType": "Conv. WPP",
-          "costPerResult": 5530,
-          "ctr": 0.42
+          "costPerResult": 2323,
+          "ctr": 0.98
         },
         {
           "name": "WPP/ENS/EDIT/HR/#SERGIO",
           "status": "ACTIVE",
-          "spend": 5176,
-          "impressions": 672,
-          "clicks": 7,
-          "reach": 561,
-          "results": 1,
+          "spend": 47432,
+          "impressions": 10040,
+          "clicks": 116,
+          "reach": 8597,
+          "results": 14,
           "resultType": "Conv. WPP",
-          "costPerResult": 5176,
-          "ctr": 1.04
+          "costPerResult": 3388,
+          "ctr": 1.16
         },
         {
           "name": "PRF/ENS+MCM",
           "status": "ACTIVE",
-          "spend": 218431,
-          "impressions": 90245,
-          "clicks": 3457,
-          "reach": 57360,
-          "results": 2172,
+          "spend": 230006,
+          "impressions": 94560,
+          "clicks": 3583,
+          "reach": 59623,
+          "results": 2240,
           "resultType": "Visitas perfil",
-          "costPerResult": 101,
-          "ctr": 3.83
+          "costPerResult": 103,
+          "ctr": 3.79
         },
         {
           "name": "WPP/PROMO/EDIT",
@@ -59,9 +59,9 @@
           "impressions": 20216,
           "clicks": 287,
           "reach": 15941,
-          "results": 34,
+          "results": 36,
           "resultType": "Conv. WPP",
-          "costPerResult": 2766,
+          "costPerResult": 2612,
           "ctr": 1.42
         },
         {
@@ -181,5 +181,5 @@
       ]
     }
   ],
-  "updatedAt": "2026-09-21"
+  "updatedAt": "2026-09-22"
 }

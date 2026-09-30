@@ -4,8 +4,9 @@
       "month": "2026-09",
       "label": "Sep 2026",
       "campaigns": [
-        {"name": "WPP/ENS/EDIT/ADV/HR/SEP", "status": "ACTIVE", "spend": 195216, "impressions": 61437, "clicks": 1178, "reach": 42572, "results": 130, "resultType": "Conv. WPP", "costPerResult": 1502, "ctr": 1.92},
-        {"name": "PRF/ENS+MCM", "status": "ACTIVE", "spend": 299026, "impressions": 131236, "clicks": 4530, "reach": 76124, "results": 2833, "resultType": "Visitas perfil", "costPerResult": 106, "ctr": 3.45},
+        {"name": "VTS/WEB", "status": "ACTIVE", "spend": 73762, "impressions": 7466, "clicks": 407, "reach": 4045, "results": 1, "resultType": "Compra web", "costPerResult": 73762, "ctr": 5.45},
+        {"name": "WPP/ENS/EDIT/ADV/HR/SEP", "status": "ACTIVE", "spend": 225316, "impressions": 69561, "clicks": 1315, "reach": 47491, "results": 151, "resultType": "Conv. WPP", "costPerResult": 1492, "ctr": 1.89},
+        {"name": "PRF/ENS+MCM", "status": "ACTIVE", "spend": 307779, "impressions": 135318, "clicks": 4639, "reach": 77696, "results": 2900, "resultType": "Visitas perfil", "costPerResult": 106, "ctr": 3.43},
         {"name": "WPP/ENS/EDIT/ADV/HR/#SERGIO", "status": "PAUSED", "spend": 78368, "impressions": 14919, "clicks": 136, "reach": 12118, "results": 33, "resultType": "Conv. WPP", "costPerResult": 2375, "ctr": 0.91},
         {"name": "WPP/ENS/EDIT/HR/#SERGIO", "status": "PAUSED", "spend": 48190, "impressions": 10269, "clicks": 119, "reach": 8869, "results": 16, "resultType": "Conv. WPP", "costPerResult": 3012, "ctr": 1.16},
         {"name": "WPP/PROMO/EDIT", "status": "PAUSED", "spend": 7176, "impressions": 902, "clicks": 10, "reach": 840, "results": 2, "resultType": "Conv. WPP", "costPerResult": 3588, "ctr": 1.11},
@@ -28,5 +29,5 @@
       ]
     }
   ],
-  "updatedAt": "2026-09-29"
+  "updatedAt": "2026-09-30"
 }

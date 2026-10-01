@@ -1,12 +1,20 @@
 {
   "monthly": [
     {
+      "month": "2026-10",
+      "label": "Oct 2026",
+      "campaigns": [
+        {"name": "WPP/ENS/EDIT/ADV/HR/SEP", "status": "ACTIVE", "spend": 26178, "impressions": 7490, "clicks": 113, "reach": 6773, "results": 16, "resultType": "Conv. WPP", "costPerResult": 1636, "ctr": 1.51},
+        {"name": "PRF/ENS+MCM", "status": "ACTIVE", "spend": 3301, "impressions": 1382, "clicks": 40, "reach": 1297, "results": 25, "resultType": "Visitas perfil", "costPerResult": 132, "ctr": 2.89}
+      ]
+    },
+    {
       "month": "2026-09",
       "label": "Sep 2026",
       "campaigns": [
-        {"name": "VTS/WEB", "status": "ACTIVE", "spend": 73762, "impressions": 7466, "clicks": 407, "reach": 4045, "results": 1, "resultType": "Compra web", "costPerResult": 73762, "ctr": 5.45},
-        {"name": "WPP/ENS/EDIT/ADV/HR/SEP", "status": "ACTIVE", "spend": 225316, "impressions": 69561, "clicks": 1315, "reach": 47491, "results": 151, "resultType": "Conv. WPP", "costPerResult": 1492, "ctr": 1.89},
-        {"name": "PRF/ENS+MCM", "status": "ACTIVE", "spend": 307779, "impressions": 135318, "clicks": 4639, "reach": 77696, "results": 2900, "resultType": "Visitas perfil", "costPerResult": 106, "ctr": 3.43},
+        {"name": "VTS/WEB", "status": "ACTIVE", "spend": 92661, "impressions": 9525, "clicks": 508, "reach": 5003, "results": 1, "resultType": "Compra web", "costPerResult": 92661, "ctr": 5.33},
+        {"name": "WPP/ENS/EDIT/ADV/HR/SEP", "status": "ACTIVE", "spend": 304284, "impressions": 88840, "clicks": 1609, "reach": 57981, "results": 194, "resultType": "Conv. WPP", "costPerResult": 1568, "ctr": 1.81},
+        {"name": "PRF/ENS+MCM", "status": "ACTIVE", "spend": 315352, "impressions": 138851, "clicks": 4757, "reach": 79079, "results": 2979, "resultType": "Visitas perfil", "costPerResult": 106, "ctr": 3.43},
         {"name": "WPP/ENS/EDIT/ADV/HR/#SERGIO", "status": "PAUSED", "spend": 78368, "impressions": 14919, "clicks": 136, "reach": 12118, "results": 33, "resultType": "Conv. WPP", "costPerResult": 2375, "ctr": 0.91},
         {"name": "WPP/ENS/EDIT/HR/#SERGIO", "status": "PAUSED", "spend": 48190, "impressions": 10269, "clicks": 119, "reach": 8869, "results": 16, "resultType": "Conv. WPP", "costPerResult": 3012, "ctr": 1.16},
         {"name": "WPP/PROMO/EDIT", "status": "PAUSED", "spend": 7176, "impressions": 902, "clicks": 10, "reach": 840, "results": 2, "resultType": "Conv. WPP", "costPerResult": 3588, "ctr": 1.11},
@@ -16,18 +24,7 @@
         {"name": "WPP/ENS/EDIT/HR", "status": "PAUSED", "spend": 455695, "impressions": 104118, "clicks": 1038, "reach": 74340, "results": 168, "resultType": "Conv. WPP", "costPerResult": 2712, "ctr": 1.00},
         {"name": "WPP/ENS/EDIT/ADV/HR", "status": "PAUSED", "spend": 661062, "impressions": 149206, "clicks": 1701, "reach": 98463, "results": 253, "resultType": "Conv. WPP", "costPerResult": 2613, "ctr": 1.14}
       ]
-    },
-    {
-      "month": "2026-08",
-      "label": "Ago 2026",
-      "campaigns": [
-        {"name": "WPP/ENS/EDIT/HR", "status": "PAUSED", "spend": 262433, "impressions": 49628, "clicks": 631, "reach": 35295, "results": 111, "resultType": "Conv. WPP", "costPerResult": 2364, "ctr": 1.27},
-        {"name": "WPP/ENS/EDIT/ADV/HR", "status": "PAUSED", "spend": 199341, "impressions": 42495, "clicks": 658, "reach": 32126, "results": 104, "resultType": "Conv. WPP", "costPerResult": 1917, "ctr": 1.55},
-        {"name": "VTS/WEB", "status": "PAUSED", "spend": 180601, "impressions": 31833, "clicks": 404, "reach": 12972, "results": 1, "resultType": "Compra web", "costPerResult": 180601, "ctr": 1.27},
-        {"name": "WPP/ENS/EDIT/ADV", "status": "PAUSED", "spend": 79097, "impressions": 12965, "clicks": 162, "reach": 9700, "results": 40, "resultType": "Conv. WPP", "costPerResult": 1977, "ctr": 1.25},
-        {"name": "WPP/ENS/EDIT", "status": "PAUSED", "spend": 648771, "impressions": 122682, "clicks": 1484, "reach": 63416, "results": 286, "resultType": "Conv. WPP", "costPerResult": 2268, "ctr": 1.21}
-      ]
     }
   ],
-  "updatedAt": "2026-09-30"
+  "updatedAt": "2026-10-01"
 }

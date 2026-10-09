@@ -4,9 +4,9 @@
       "month": "2026-10",
       "label": "Oct 2026",
       "campaigns": [
-        {"name": "VTS/WEB", "status": "ACTIVE", "spend": 196200, "impressions": 34729, "clicks": 955, "reach": 11394, "results": 10, "resultType": "Compra web", "costPerResult": 19620, "ctr": 2.75},
-        {"name": "WPP/ENS/EDIT/ADV/HR/SEP", "status": "ACTIVE", "spend": 318202, "impressions": 133312, "clicks": 2275, "reach": 89048, "results": 189, "resultType": "Conv. WPP", "costPerResult": 1684, "ctr": 1.71},
-        {"name": "PRF/ENS+MCM", "status": "ACTIVE", "spend": 71367, "impressions": 47756, "clicks": 1526, "reach": 33684, "results": 877, "resultType": "Visitas perfil", "costPerResult": 81, "ctr": 3.20},
+        {"name": "VTS/WEB", "status": "ACTIVE", "spend": 223342, "impressions": 40738, "clicks": 1062, "reach": 12301, "results": 13, "resultType": "Compra web", "costPerResult": 17180, "ctr": 2.61},
+        {"name": "WPP/ENS/EDIT/ADV/HR/SEP", "status": "ACTIVE", "spend": 344280, "impressions": 144926, "clicks": 2483, "reach": 94031, "results": 205, "resultType": "Conv. WPP", "costPerResult": 1679, "ctr": 1.71},
+        {"name": "PRF/ENS+MCM", "status": "ACTIVE", "spend": 82527, "impressions": 53884, "clicks": 1720, "reach": 37889, "results": 988, "resultType": "Visitas perfil", "costPerResult": 84, "ctr": 3.19},
         {"name": "WPP/AVR", "status": "PAUSED", "spend": 37388, "impressions": 8295, "clicks": 75, "reach": 6934, "results": 17, "resultType": "Conv. WPP", "costPerResult": 2199, "ctr": 0.90}
       ]
     },
@@ -28,5 +28,5 @@
       ]
     }
   ],
-  "updatedAt": "2026-10-08"
+  "updatedAt": "2026-10-09"
 }
